@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type Product = {
@@ -9,26 +9,40 @@ type Product = {
   title: string;
   price: string | null;
   description: string | null;
-  image_url: string | null;
   whatsapp_number: string;
   slug: string;
   status: string | null;
 };
 
-export default function EditorForm({ product }: { product: Product }) {
+export default function EditorForm({
+  product,
+  imageUrls,
+}: {
+  product: Product;
+  imageUrls: string[];
+}) {
   const router = useRouter();
 
   const [sourceUrl, setSourceUrl] = useState(product.source_url || "");
   const [title, setTitle] = useState(product.title || "");
   const [price, setPrice] = useState(product.price || "");
   const [description, setDescription] = useState(product.description || "");
-  const [imageUrl, setImageUrl] = useState(product.image_url || "");
+  const [imageUrlsText, setImageUrlsText] = useState(imageUrls.join("\n"));
   const [whatsappNumber, setWhatsappNumber] = useState(product.whatsapp_number || "");
   const [slug, setSlug] = useState(product.slug || "");
   const [status, setStatus] = useState(product.status || "draft");
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingPublish, setLoadingPublish] = useState(false);
   const [message, setMessage] = useState("");
+
+  const parsedImages = useMemo(
+    () =>
+      imageUrlsText
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean),
+    [imageUrlsText]
+  );
 
   async function saveOnly() {
     setMessage("");
@@ -43,7 +57,7 @@ export default function EditorForm({ product }: { product: Product }) {
           title,
           price,
           description,
-          image_url: imageUrl,
+          image_urls: parsedImages,
           whatsapp_number: whatsappNumber,
           slug,
         }),
@@ -73,7 +87,7 @@ export default function EditorForm({ product }: { product: Product }) {
           title,
           price,
           description,
-          image_url: imageUrl,
+          image_urls: parsedImages,
           whatsapp_number: whatsappNumber,
           slug,
         }),
@@ -106,15 +120,15 @@ export default function EditorForm({ product }: { product: Product }) {
   return (
     <div className="space-y-5">
       <Field label="URL do produto">
-        <input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+        <input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} className="input-soft" />
       </Field>
 
       <Field label="Nome do produto">
-        <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+        <input value={title} onChange={(e) => setTitle(e.target.value)} className="input-soft" />
       </Field>
 
       <Field label="Preço">
-        <input value={price} onChange={(e) => setPrice(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+        <input value={price} onChange={(e) => setPrice(e.target.value)} className="input-soft" />
       </Field>
 
       <Field label="Descrição">
@@ -122,29 +136,38 @@ export default function EditorForm({ product }: { product: Product }) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={6}
-          className="min-h-[180px] w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900"
+          className="input-soft min-h-[180px]"
         />
       </Field>
 
-      <Field label="Imagem URL">
-        <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+      <Field label="Imagens do produto">
+        <textarea
+          value={imageUrlsText}
+          onChange={(e) => setImageUrlsText(e.target.value)}
+          rows={6}
+          placeholder={"Cole uma URL por linha\nhttps://imagem1.jpg\nhttps://imagem2.jpg"}
+          className="input-soft min-h-[180px]"
+        />
       </Field>
 
       <Field label="WhatsApp">
-        <input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+        <input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className="input-soft" />
       </Field>
 
       <Field label="Slug">
-        <input value={slug} onChange={(e) => setSlug(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+        <input value={slug} onChange={(e) => setSlug(e.target.value)} className="input-soft" />
       </Field>
 
-      <div className="rounded-2xl border border-[#eadfce] bg-[#fbf8f3] p-5">
+      <div className="rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-5">
         <p><strong>Status:</strong> {status}</p>
         <p className="mt-2"><strong>Preview:</strong> /{slug}</p>
+        <p className="mt-2 text-sm text-zinc-600">
+          Total de imagens: {parsedImages.length}
+        </p>
       </div>
 
       {message && (
-        <div className="rounded-2xl border border-[#e7ddcf] bg-white px-4 py-3 text-sm text-zinc-700">
+        <div className="rounded-2xl border border-[#ece4d8] bg-white px-4 py-3 text-sm text-zinc-700">
           {message}
         </div>
       )}
@@ -154,7 +177,7 @@ export default function EditorForm({ product }: { product: Product }) {
           type="button"
           onClick={saveOnly}
           disabled={loadingSave}
-          className="rounded-2xl border border-[#ddd1c0] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef] disabled:opacity-60"
+          className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef] disabled:opacity-60"
         >
           {loadingSave ? "Salvando..." : "Salvar alterações"}
         </button>
@@ -177,7 +200,7 @@ function Field({
   children,
 }: {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div>
