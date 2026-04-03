@@ -42,12 +42,21 @@ export default async function AdminPage() {
             </p>
           </div>
 
-          <Link
-            href="/create"
-            className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700"
-          >
-            Nova página
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/catalogo"
+              className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]"
+            >
+              Catálogo
+            </Link>
+
+            <Link
+              href="/create"
+              className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700"
+            >
+              Nova página
+            </Link>
+          </div>
         </div>
 
         {error && (
@@ -64,7 +73,7 @@ export default async function AdminPage() {
 
         {!error && pages.length > 0 && (
           <div className="mt-8 overflow-hidden rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3]">
-            <div className="grid grid-cols-[2fr_1fr_1fr_1.4fr] gap-4 border-b border-[#ece4d8] px-5 py-4 text-sm font-semibold">
+            <div className="grid grid-cols-[2fr_1fr_1fr_1.5fr] gap-4 border-b border-[#ece4d8] px-5 py-4 text-sm font-semibold">
               <div>Página</div>
               <div>Status</div>
               <div>Criada em</div>
@@ -74,7 +83,7 @@ export default async function AdminPage() {
             {pages.map((page) => (
               <div
                 key={page.id}
-                className="grid grid-cols-[2fr_1fr_1fr_1.4fr] gap-4 border-b border-[#ece4d8] px-5 py-4 last:border-b-0"
+                className="grid grid-cols-[2fr_1fr_1fr_1.5fr] gap-4 border-b border-[#ece4d8] px-5 py-4 last:border-b-0"
               >
                 <div>
                   <div className="font-semibold">{page.title}</div>

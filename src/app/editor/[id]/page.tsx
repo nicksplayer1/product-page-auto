@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import EditorForm from "@/components/editor-form";
+import ProductGallery from "@/components/product-gallery";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -34,7 +35,7 @@ export default async function EditorPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
-      <div className="mx-auto max-w-5xl rounded-[28px] border border-[#ece4d8] bg-white/80 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-10">
+      <div className="mx-auto max-w-7xl rounded-[28px] border border-[#ece4d8] bg-white/80 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-10">
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <div>
             <h1 className="text-3xl font-bold">Editor da página</h1>
@@ -43,15 +44,33 @@ export default async function EditorPage({ params }: Props) {
             </p>
           </div>
 
-          <Link
-            href="/admin"
-            className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
-          >
-            Ir para admin
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/admin"
+              className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
+            >
+              Ir para admin
+            </Link>
+
+            <Link
+              href={`/${data.slug}`}
+              className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700"
+            >
+              Ver página
+            </Link>
+          </div>
         </div>
 
-        <EditorForm product={data} imageUrls={imageUrls} />
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-5">
+            <h2 className="mb-4 text-xl font-bold">Prévia da galeria</h2>
+            <ProductGallery images={imageUrls} title={data.title} />
+          </div>
+
+          <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-5">
+            <EditorForm product={data} imageUrls={imageUrls} />
+          </div>
+        </div>
       </div>
     </main>
   );

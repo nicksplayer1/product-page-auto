@@ -67,6 +67,7 @@ export default function EditorForm({
       if (!res.ok || !json.ok) throw new Error(json.error || "Erro ao salvar.");
 
       setMessage("Alterações salvas com sucesso.");
+      router.refresh();
     } catch (err: unknown) {
       setMessage(err instanceof Error ? err.message : "Erro ao salvar.");
     } finally {
@@ -120,15 +121,15 @@ export default function EditorForm({
   return (
     <div className="space-y-5">
       <Field label="URL do produto">
-        <input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} className="input-soft" />
+        <input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
       </Field>
 
       <Field label="Nome do produto">
-        <input value={title} onChange={(e) => setTitle(e.target.value)} className="input-soft" />
+        <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
       </Field>
 
       <Field label="Preço">
-        <input value={price} onChange={(e) => setPrice(e.target.value)} className="input-soft" />
+        <input value={price} onChange={(e) => setPrice(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
       </Field>
 
       <Field label="Descrição">
@@ -136,7 +137,7 @@ export default function EditorForm({
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={6}
-          className="input-soft min-h-[180px]"
+          className="min-h-[180px] w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900"
         />
       </Field>
 
@@ -144,23 +145,23 @@ export default function EditorForm({
         <textarea
           value={imageUrlsText}
           onChange={(e) => setImageUrlsText(e.target.value)}
-          rows={6}
+          rows={7}
           placeholder={"Cole uma URL por linha\nhttps://imagem1.jpg\nhttps://imagem2.jpg"}
-          className="input-soft min-h-[180px]"
+          className="min-h-[210px] w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 font-mono text-sm outline-none transition focus:border-zinc-900"
         />
       </Field>
 
       <Field label="WhatsApp">
-        <input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className="input-soft" />
+        <input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
       </Field>
 
       <Field label="Slug">
-        <input value={slug} onChange={(e) => setSlug(e.target.value)} className="input-soft" />
+        <input value={slug} onChange={(e) => setSlug(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
       </Field>
 
-      <div className="rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-5">
+      <div className="rounded-2xl border border-[#ece4d8] bg-white p-5">
         <p><strong>Status:</strong> {status}</p>
-        <p className="mt-2"><strong>Preview:</strong> /{slug}</p>
+        <p className="mt-2 break-all"><strong>Preview:</strong> /{slug}</p>
         <p className="mt-2 text-sm text-zinc-600">
           Total de imagens: {parsedImages.length}
         </p>
