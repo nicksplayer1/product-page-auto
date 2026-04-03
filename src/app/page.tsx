@@ -2,31 +2,70 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white text-zinc-900">
-      <section className="mx-auto flex max-w-4xl flex-col items-center px-6 py-20 text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-          Crie páginas de produto prontas em minutos
-        </h1>
+    <main className="min-h-screen bg-[#f6f1e8] px-6 py-10 text-zinc-900">
+      <section className="mx-auto max-w-6xl">
+        <div className="overflow-hidden rounded-[32px] border border-[#e7ddcf] bg-white/70 shadow-[0_20px_60px_rgba(0,0,0,0.06)] backdrop-blur">
+          <div className="grid gap-10 px-8 py-12 md:grid-cols-2 md:px-12 md:py-16">
+            <div className="flex flex-col justify-center">
+              <span className="inline-flex w-fit rounded-full border border-[#e7ddcf] bg-[#f8f3eb] px-4 py-2 text-sm font-medium text-zinc-700">
+                Ferramenta de páginas de produto
+              </span>
 
-        <p className="mt-4 max-w-2xl text-lg text-zinc-600">
-          Cole o link do produto ou preencha os dados manualmente, revise a página
-          e publique seu link pronto para vender.
-        </p>
+              <h1 className="mt-6 text-4xl font-bold leading-tight md:text-6xl">
+                Crie páginas de produto bonitas e prontas para vender
+              </h1>
 
-        <div className="mt-8 flex gap-4">
-          <Link
-            href="/create"
-            className="rounded-2xl bg-zinc-900 px-6 py-3 text-white transition hover:bg-zinc-700"
-          >
-            Criar página automática
-          </Link>
+              <p className="mt-5 max-w-xl text-lg leading-8 text-zinc-600">
+                Cole um link, preencha os dados, revise sua página e publique um
+                link limpo para divulgar no WhatsApp, Instagram ou anúncios.
+              </p>
 
-          <Link
-            href="/admin"
-            className="rounded-2xl border border-zinc-300 px-6 py-3 transition hover:bg-zinc-100"
-          >
-            Minhas páginas
-          </Link>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link
+                  href="/create"
+                  className="rounded-2xl bg-zinc-900 px-6 py-3 font-medium text-white transition hover:bg-zinc-700"
+                >
+                  Criar página automática
+                </Link>
+
+                <Link
+                  href="/admin"
+                  className="rounded-2xl border border-[#ddd1c0] bg-[#fbf8f3] px-6 py-3 font-medium text-zinc-800 transition hover:bg-white"
+                >
+                  Minhas páginas
+                </Link>
+              </div>
+            </div>
+
+            <div className="flex items-center">
+              <div className="w-full rounded-[28px] border border-[#eadfce] bg-[#fbf8f3] p-6 shadow-sm">
+                <div className="rounded-2xl border border-[#eadfce] bg-white p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                    Exemplo de página
+                  </p>
+
+                  <h2 className="mt-3 text-2xl font-bold">
+                    Organizador Dobrável Premium
+                  </h2>
+
+                  <p className="mt-3 text-3xl font-semibold">R$ 79,90</p>
+
+                  <p className="mt-4 text-sm leading-7 text-zinc-600">
+                    Visual limpo, botão de compra no WhatsApp e link próprio para
+                    divulgar com rapidez.
+                  </p>
+
+                  <div className="mt-6 rounded-2xl border border-dashed border-[#ddd1c0] bg-[#f8f3eb] p-8 text-center text-sm text-zinc-500">
+                    Imagem do produto
+                  </div>
+
+                  <button className="mt-6 w-full rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">
+                    Comprar pelo WhatsApp
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </main>

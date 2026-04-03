@@ -1,9 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-type ProductPage = {
+type Product = {
   id: string;
   source_url: string | null;
   title: string;
@@ -12,217 +12,177 @@ type ProductPage = {
   image_url: string | null;
   whatsapp_number: string;
   slug: string;
-  status: string;
+  status: string | null;
 };
 
-type Props = {
-  initialPage: ProductPage;
-};
-
-export default function EditorForm({ initialPage }: Props) {
+export default function EditorForm({ product }: { product: Product }) {
   const router = useRouter();
 
-  const [form, setForm] = useState({
-    source_url: initialPage.source_url || "",
-    title: initialPage.title || "",
-    price: initialPage.price || "",
-    description: initialPage.description || "",
-    image_url: initialPage.image_url || "",
-    whatsapp_number: initialPage.whatsapp_number || "",
-    slug: initialPage.slug || "",
-  });
-
-  const [status, setStatus] = useState(initialPage.status || "draft");
-  const [saving, setSaving] = useState(false);
-  const [publishing, setPublishing] = useState(false);
+  const [sourceUrl, setSourceUrl] = useState(product.source_url || "");
+  const [title, setTitle] = useState(product.title || "");
+  const [price, setPrice] = useState(product.price || "");
+  const [description, setDescription] = useState(product.description || "");
+  const [imageUrl, setImageUrl] = useState(product.image_url || "");
+  const [whatsappNumber, setWhatsappNumber] = useState(product.whatsapp_number || "");
+  const [slug, setSlug] = useState(product.slug || "");
+  const [status, setStatus] = useState(product.status || "draft");
+  const [loadingSave, setLoadingSave] = useState(false);
+  const [loadingPublish, setLoadingPublish] = useState(false);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
 
-  function updateField(name: string, value: string) {
-    setForm((prev) => ({ ...prev, [name]: value }));
-  }
-
-  async function handleSave() {
-    setSaving(true);
-    setError("");
+  async function saveOnly() {
     setMessage("");
+    setLoadingSave(true);
 
     try {
-      const res = await fetch(`/api/product-pages/${initialPage.id}`, {
+      const res = await fetch(`/api/product-pages/${product.id}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source_url: sourceUrl,
+          title,
+          price,
+          description,
+          image_url: imageUrl,
+          whatsapp_number: whatsappNumber,
+          slug,
+        }),
       });
 
       const json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error || "Erro ao salvar.");
 
-      if (!res.ok) {
-        throw new Error(json.error || "Erro ao salvar.");
-      }
-
-      setMessage("Página salva com sucesso.");
-      if (json.page?.status) {
-        setStatus(json.page.status);
-      }
-      router.refresh();
+      setMessage("Alterações salvas com sucesso.");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Erro ao salvar.");
+      setMessage(err instanceof Error ? err.message : "Erro ao salvar.");
     } finally {
-      setSaving(false);
+      setLoadingSave(false);
     }
   }
 
-  async function handlePublish() {
-    setPublishing(true);
-    setError("");
+  async function saveAndPublish() {
     setMessage("");
+    setLoadingPublish(true);
 
     try {
-      const saveRes = await fetch(`/api/product-pages/${initialPage.id}`, {
+      const saveRes = await fetch(`/api/product-pages/${product.id}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source_url: sourceUrl,
+          title,
+          price,
+          description,
+          image_url: imageUrl,
+          whatsapp_number: whatsappNumber,
+          slug,
+        }),
       });
 
       const saveJson = await saveRes.json();
-
-      if (!saveRes.ok) {
-        throw new Error(saveJson.error || "Erro ao salvar antes de publicar.");
+      if (!saveRes.ok || !saveJson.ok) {
+        throw new Error(saveJson.error || "Erro ao salvar.");
       }
 
-      const publishRes = await fetch(`/api/product-pages/${initialPage.id}/publish`, {
+      const publishRes = await fetch(`/api/product-pages/${product.id}/publish`, {
         method: "POST",
       });
 
       const publishJson = await publishRes.json();
-
-      if (!publishRes.ok) {
+      if (!publishRes.ok || !publishJson.ok) {
         throw new Error(publishJson.error || "Erro ao publicar.");
       }
 
       setStatus("published");
       setMessage("Página publicada com sucesso.");
-      router.push(`/${form.slug}`);
       router.refresh();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Erro ao publicar.");
+      setMessage(err instanceof Error ? err.message : "Erro ao publicar.");
     } finally {
-      setPublishing(false);
+      setLoadingPublish(false);
     }
   }
 
   return (
-    <div className="mt-8 space-y-5">
-      <div>
-        <label className="mb-2 block text-sm font-medium">URL do produto</label>
-        <input
-          type="text"
-          value={form.source_url}
-          onChange={(e) => updateField("source_url", e.target.value)}
-          className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-        />
-      </div>
+    <div className="space-y-5">
+      <Field label="URL do produto">
+        <input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+      </Field>
 
-      <div>
-        <label className="mb-2 block text-sm font-medium">Nome do produto</label>
-        <input
-          type="text"
-          value={form.title}
-          onChange={(e) => updateField("title", e.target.value)}
-          className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-        />
-      </div>
+      <Field label="Nome do produto">
+        <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+      </Field>
 
-      <div>
-        <label className="mb-2 block text-sm font-medium">Preço</label>
-        <input
-          type="text"
-          value={form.price}
-          onChange={(e) => updateField("price", e.target.value)}
-          className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-        />
-      </div>
+      <Field label="Preço">
+        <input value={price} onChange={(e) => setPrice(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+      </Field>
 
-      <div>
-        <label className="mb-2 block text-sm font-medium">Descrição</label>
+      <Field label="Descrição">
         <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           rows={6}
-          value={form.description}
-          onChange={(e) => updateField("description", e.target.value)}
-          className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
+          className="min-h-[180px] w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900"
         />
-      </div>
+      </Field>
 
-      <div>
-        <label className="mb-2 block text-sm font-medium">Imagem URL</label>
-        <input
-          type="text"
-          value={form.image_url}
-          onChange={(e) => updateField("image_url", e.target.value)}
-          className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-        />
-      </div>
+      <Field label="Imagem URL">
+        <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+      </Field>
 
-      <div>
-        <label className="mb-2 block text-sm font-medium">WhatsApp</label>
-        <input
-          type="text"
-          value={form.whatsapp_number}
-          onChange={(e) => updateField("whatsapp_number", e.target.value)}
-          className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-        />
-      </div>
+      <Field label="WhatsApp">
+        <input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+      </Field>
 
-      <div>
-        <label className="mb-2 block text-sm font-medium">Slug</label>
-        <input
-          type="text"
-          value={form.slug}
-          onChange={(e) => updateField("slug", e.target.value)}
-          className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-        />
-      </div>
+      <Field label="Slug">
+        <input value={slug} onChange={(e) => setSlug(e.target.value)} className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+      </Field>
 
-      <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm">
+      <div className="rounded-2xl border border-[#eadfce] bg-[#fbf8f3] p-5">
         <p><strong>Status:</strong> {status}</p>
-        <p className="mt-2 break-all"><strong>Preview:</strong> /{form.slug}</p>
+        <p className="mt-2"><strong>Preview:</strong> /{slug}</p>
       </div>
-
-      {error && (
-        <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-          {error}
-        </div>
-      )}
 
       {message && (
-        <div className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
+        <div className="rounded-2xl border border-[#e7ddcf] bg-white px-4 py-3 text-sm text-zinc-700">
           {message}
         </div>
       )}
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={handleSave}
-          disabled={saving || publishing}
-          className="rounded-2xl border border-zinc-300 px-5 py-3 font-medium transition hover:bg-zinc-100 disabled:opacity-60"
+          onClick={saveOnly}
+          disabled={loadingSave}
+          className="rounded-2xl border border-[#ddd1c0] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef] disabled:opacity-60"
         >
-          {saving ? "Salvando..." : "Salvar alterações"}
+          {loadingSave ? "Salvando..." : "Salvar alterações"}
         </button>
 
         <button
           type="button"
-          onClick={handlePublish}
-          disabled={saving || publishing}
+          onClick={saveAndPublish}
+          disabled={loadingPublish}
           className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60"
         >
-          {publishing ? "Publicando..." : "Salvar e publicar"}
+          {loadingPublish ? "Publicando..." : "Salvar e publicar"}
         </button>
       </div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-medium text-zinc-700">{label}</label>
+      {children}
     </div>
   );
 }
