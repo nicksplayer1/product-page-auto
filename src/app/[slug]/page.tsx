@@ -1,11 +1,15 @@
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
-type PageProps = {
+type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export default async function PublicProductPage({ params }: PageProps) {
+function onlyDigits(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+export default async function PublicProductPage({ params }: Props) {
   const { slug } = await params;
 
   const { data, error } = await supabaseAdmin
@@ -19,55 +23,54 @@ export default async function PublicProductPage({ params }: PageProps) {
     notFound();
   }
 
-  const message = encodeURIComponent(`Olá! Tenho interesse em ${data.title}`);
-  const whatsappLink = `https://wa.me/${data.whatsapp_number}?text=${message}`;
+  const whatsapp = onlyDigits(data.whatsapp_number || "");
+  const message = encodeURIComponent(`Olá! Tenho interesse em ${data.title}.`);
+  const whatsappUrl = `https://wa.me/${whatsapp}?text=${message}`;
+  const hasValidImage =
+    !!data.image_url && /^https?:\/\//i.test(String(data.image_url));
 
   return (
     <main className="min-h-screen bg-white px-6 py-10 text-zinc-900">
-      <div className="mx-auto max-w-4xl">
-        <div className="grid gap-10 md:grid-cols-2">
-          <div>
-            {data.image_url ? (
-              <img
-                src={data.image_url}
-                alt={data.title}
-                className="h-auto w-full rounded-3xl border border-zinc-200 object-cover"
-              />
-            ) : (
-              <div className="flex min-h-[320px] items-center justify-center rounded-3xl border border-dashed border-zinc-300 bg-zinc-50 text-zinc-500">
-                Sem imagem
-              </div>
-            )}
-          </div>
+      <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-2">
+        <div>
+          {hasValidImage ? (
+            <img
+              src={data.image_url}
+              alt={data.title}
+              className="w-full rounded-2xl border border-zinc-200 object-cover"
+            />
+          ) : (
+            <div className="flex h-[320px] w-full items-center justify-center rounded-2xl border border-zinc-200 bg-zinc-100 text-zinc-500">
+              Imagem não disponível
+            </div>
+          )}
+        </div>
 
-          <div className="flex flex-col justify-center">
-            <p className="text-sm font-medium uppercase tracking-wide text-zinc-500">
-              Página de produto
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+            Página de produto
+          </p>
+
+          <h1 className="mt-3 text-4xl font-bold">{data.title}</h1>
+
+          <p className="mt-4 text-3xl font-semibold">
+            {data.price || "Consulte o preço"}
+          </p>
+
+          {data.description && (
+            <p className="mt-6 whitespace-pre-line text-zinc-700">
+              {data.description}
             </p>
+          )}
 
-            <h1 className="mt-3 text-4xl font-bold tracking-tight">
-              {data.title}
-            </h1>
-
-            {data.price && (
-              <p className="mt-4 text-3xl font-semibold">{data.price}</p>
-            )}
-
-            {data.description && (
-              <p className="mt-6 whitespace-pre-line text-zinc-700">
-                {data.description}
-              </p>
-            )}
-
-            <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-8 inline-flex w-full items-center justify-center rounded-2xl bg-zinc-900 px-6 py-4 font-medium text-white transition hover:bg-zinc-700 sm:w-auto"
-            >
-              Comprar pelo WhatsApp
-            </a>
-          </div>
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-8 inline-flex rounded-2xl bg-zinc-900 px-6 py-4 font-medium text-white transition hover:bg-zinc-700"
+          >
+            Comprar pelo WhatsApp
+          </a>
         </div>
       </div>
     </main>

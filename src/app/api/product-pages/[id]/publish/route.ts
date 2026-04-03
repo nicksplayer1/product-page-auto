@@ -1,46 +1,34 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
-type RouteProps = {
+type Props = {
   params: Promise<{ id: string }>;
 };
 
-export async function POST(_request: NextRequest, { params }: RouteProps) {
+export async function POST(_: Request, { params }: Props) {
   const { id } = await params;
-
-  const { data: currentPage, error: currentError } = await supabaseAdmin
-    .from("product_pages")
-    .select("id, title, slug, whatsapp_number")
-    .eq("id", id)
-    .single();
-
-  if (currentError || !currentPage) {
-    return NextResponse.json(
-      { ok: false, error: "Página não encontrada." },
-      { status: 404 }
-    );
-  }
-
-  if (!currentPage.title || !currentPage.slug || !currentPage.whatsapp_number) {
-    return NextResponse.json(
-      { ok: false, error: "Preencha título, slug e WhatsApp antes de publicar." },
-      { status: 400 }
-    );
-  }
 
   const { data, error } = await supabaseAdmin
     .from("product_pages")
-    .update({ status: "published" })
+    .update({
+      status: "published",
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id)
-    .select()
+    .select("id, slug, status")
     .single();
 
-  if (error) {
+  if (error || !data) {
     return NextResponse.json(
-      { ok: false, error: "Erro ao publicar página." },
-      { status: 400 }
+      { ok: false, error: error?.message || "Erro ao publicar." },
+      { status: 500 }
     );
   }
 
-  return NextResponse.json({ ok: true, page: data });
+  return NextResponse.json({
+    ok: true,
+    id: data.id,
+    slug: data.slug,
+    status: data.status,
+  });
 }
