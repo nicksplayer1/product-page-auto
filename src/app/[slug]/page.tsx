@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { formatPrice } from "@/lib/format-price";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -54,7 +55,7 @@ export default async function PublicProductPage({ params }: Props) {
           <h1 className="mt-3 text-4xl font-bold">{data.title}</h1>
 
           <p className="mt-4 text-3xl font-semibold">
-            {data.price || "Consulte o preço"}
+            {formatPrice(data.price)}
           </p>
 
           {data.description && (
