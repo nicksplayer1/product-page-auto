@@ -11,9 +11,14 @@ export async function POST(request: Request) {
     const price = String(body.price || "").trim() || null;
     const description = String(body.description || "").trim() || null;
     const whatsapp_number = String(body.whatsapp_number || "").trim();
-    const image_urls = Array.isArray(body.image_urls)
-      ? body.image_urls.map((item) => String(item).trim()).filter(Boolean)
+
+    const rawImageUrls: unknown[] = Array.isArray(body.image_urls)
+      ? (body.image_urls as unknown[])
       : [];
+
+    const image_urls = rawImageUrls
+      .map((item: unknown) => String(item).trim())
+      .filter((item: string) => Boolean(item));
 
     if (!title) {
       return NextResponse.json(
@@ -62,7 +67,7 @@ export async function POST(request: Request) {
       const { error: imagesError } = await supabaseAdmin
         .from("product_page_images")
         .insert(
-          extraImages.map((image_url, index) => ({
+          extraImages.map((image_url: string, index: number) => ({
             product_page_id: data.id,
             image_url,
             sort_order: index + 1,
@@ -71,10 +76,7 @@ export async function POST(request: Request) {
 
       if (imagesError) {
         return NextResponse.json(
-          {
-            ok: false,
-            error: imagesError.message,
-          },
+          { ok: false, error: imagesError.message },
           { status: 500 }
         );
       }

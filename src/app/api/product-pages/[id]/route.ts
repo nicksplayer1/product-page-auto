@@ -17,9 +17,14 @@ export async function PATCH(request: Request, { params }: Props) {
     const description = String(body.description || "").trim() || null;
     const whatsapp_number = String(body.whatsapp_number || "").trim();
     const slug = String(body.slug || "").trim();
-    const image_urls = Array.isArray(body.image_urls)
-      ? body.image_urls.map((item) => String(item).trim()).filter(Boolean)
+
+    const rawImageUrls: unknown[] = Array.isArray(body.image_urls)
+      ? (body.image_urls as unknown[])
       : [];
+
+    const image_urls = rawImageUrls
+      .map((item: unknown) => String(item).trim())
+      .filter((item: string) => Boolean(item));
 
     if (!title) {
       return NextResponse.json(
@@ -82,7 +87,7 @@ export async function PATCH(request: Request, { params }: Props) {
       const { error: insertImagesError } = await supabaseAdmin
         .from("product_page_images")
         .insert(
-          extraImages.map((image_url, index) => ({
+          extraImages.map((image_url: string, index: number) => ({
             product_page_id: id,
             image_url,
             sort_order: index + 1,
