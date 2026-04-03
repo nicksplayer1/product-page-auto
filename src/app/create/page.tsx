@@ -1,9 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, ReactNode, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-import { slugify } from "@/lib/slugify";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -12,7 +10,7 @@ export default function CreatePage() {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrlsText, setImageUrlsText] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -23,32 +21,33 @@ export default function CreatePage() {
     setLoading(true);
 
     try {
-      if (!title.trim()) throw new Error("Digite o nome do produto.");
-      if (!whatsappNumber.trim()) throw new Error("Digite o WhatsApp.");
+      const image_urls = imageUrlsText
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean);
 
-      const slug = `${slugify(title)}-${Date.now()}`;
+      const res = await fetch("/api/product-pages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          source_url: sourceUrl,
+          title,
+          price,
+          description,
+          image_urls,
+          whatsapp_number: whatsappNumber,
+        }),
+      });
 
-      const { data, error } = await supabase
-        .from("product_pages")
-        .insert([
-          {
-            source_url: sourceUrl || null,
-            title: title.trim(),
-            price: price.trim() || null,
-            description: description.trim() || null,
-            image_url: imageUrl.trim() || null,
-            whatsapp_number: whatsappNumber.trim(),
-            slug,
-            status: "draft",
-            mode: sourceUrl.trim() ? "auto" : "manual",
-          },
-        ])
-        .select()
-        .single();
+      const json = await res.json();
 
-      if (error) throw error;
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error || "Erro ao criar página.");
+      }
 
-      router.push(`/editor/${data.id}`);
+      router.push(`/editor/${json.id}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Erro ao criar página.");
     } finally {
@@ -57,9 +56,9 @@ export default function CreatePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f1e8] px-6 py-10 text-zinc-900">
-      <div className="mx-auto max-w-3xl rounded-[28px] border border-[#e7ddcf] bg-white/75 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.05)] backdrop-blur md:p-10">
-        <div className="rounded-2xl border border-[#eee4d7] bg-[#fbf8f3] p-5">
+    <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
+      <div className="mx-auto max-w-3xl rounded-[28px] border border-[#ece4d8] bg-white/80 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-10">
+        <div className="rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <h1 className="text-3xl font-bold">Criar página de produto</h1>
           <p className="mt-2 text-zinc-600">
             Cole o link do produto ou preencha os dados manualmente.
@@ -73,7 +72,7 @@ export default function CreatePage() {
               value={sourceUrl}
               onChange={(e) => setSourceUrl(e.target.value)}
               placeholder="https://..."
-              className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900"
+              className="input-soft"
             />
           </Field>
 
@@ -83,7 +82,7 @@ export default function CreatePage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ex: Organizador Multiuso Premium"
-              className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900"
+              className="input-soft"
             />
           </Field>
 
@@ -93,7 +92,7 @@ export default function CreatePage() {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="Ex: 79,90"
-              className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900"
+              className="input-soft"
             />
           </Field>
 
@@ -103,17 +102,17 @@ export default function CreatePage() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Descreva o produto..."
               rows={5}
-              className="min-h-[160px] w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900"
+              className="input-soft min-h-[160px]"
             />
           </Field>
 
-          <Field label="Imagem URL">
-            <input
-              type="text"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://imagem-do-produto.jpg"
-              className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900"
+          <Field label="Imagens do produto">
+            <textarea
+              value={imageUrlsText}
+              onChange={(e) => setImageUrlsText(e.target.value)}
+              placeholder={"Cole uma URL por linha\nhttps://imagem1.jpg\nhttps://imagem2.jpg"}
+              rows={5}
+              className="input-soft min-h-[160px]"
             />
           </Field>
 
@@ -123,7 +122,7 @@ export default function CreatePage() {
               value={whatsappNumber}
               onChange={(e) => setWhatsappNumber(e.target.value)}
               placeholder="5564999999999"
-              className="w-full rounded-2xl border border-[#ddd1c0] bg-white px-4 py-3 outline-none transition focus:border-zinc-900"
+              className="input-soft"
             />
           </Field>
 
@@ -151,7 +150,7 @@ function Field({
   children,
 }: {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div>

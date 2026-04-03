@@ -2,12 +2,12 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#f6f1e8] px-6 py-10 text-zinc-900">
+    <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
       <section className="mx-auto max-w-6xl">
-        <div className="overflow-hidden rounded-[32px] border border-[#e7ddcf] bg-white/70 shadow-[0_20px_60px_rgba(0,0,0,0.06)] backdrop-blur">
+        <div className="overflow-hidden rounded-[32px] border border-[#ece4d8] bg-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.05)] backdrop-blur">
           <div className="grid gap-10 px-8 py-12 md:grid-cols-2 md:px-12 md:py-16">
             <div className="flex flex-col justify-center">
-              <span className="inline-flex w-fit rounded-full border border-[#e7ddcf] bg-[#f8f3eb] px-4 py-2 text-sm font-medium text-zinc-700">
+              <span className="inline-flex w-fit rounded-full border border-[#ece4d8] bg-[#f9f5ef] px-4 py-2 text-sm font-medium text-zinc-700">
                 Ferramenta de páginas de produto
               </span>
 
@@ -30,7 +30,7 @@ export default function HomePage() {
 
                 <Link
                   href="/admin"
-                  className="rounded-2xl border border-[#ddd1c0] bg-[#fbf8f3] px-6 py-3 font-medium text-zinc-800 transition hover:bg-white"
+                  className="rounded-2xl border border-[#e4d8c7] bg-[#fbf8f3] px-6 py-3 font-medium text-zinc-800 transition hover:bg-white"
                 >
                   Minhas páginas
                 </Link>
@@ -38,8 +38,8 @@ export default function HomePage() {
             </div>
 
             <div className="flex items-center">
-              <div className="w-full rounded-[28px] border border-[#eadfce] bg-[#fbf8f3] p-6 shadow-sm">
-                <div className="rounded-2xl border border-[#eadfce] bg-white p-5">
+              <div className="w-full rounded-[28px] border border-[#ece4d8] bg-[#fbf8f3] p-6 shadow-sm">
+                <div className="rounded-2xl border border-[#ece4d8] bg-white p-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
                     Exemplo de página
                   </p>
@@ -55,8 +55,8 @@ export default function HomePage() {
                     divulgar com rapidez.
                   </p>
 
-                  <div className="mt-6 rounded-2xl border border-dashed border-[#ddd1c0] bg-[#f8f3eb] p-8 text-center text-sm text-zinc-500">
-                    Imagem do produto
+                  <div className="mt-6 rounded-2xl border border-dashed border-[#e4d8c7] bg-[#f9f5ef] p-8 text-center text-sm text-zinc-500">
+                    Galeria de imagens do produto
                   </div>
 
                   <button className="mt-6 w-full rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">

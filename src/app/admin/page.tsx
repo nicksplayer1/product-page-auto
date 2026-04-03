@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import DeletePageButton from "@/components/delete-page-button";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +32,14 @@ export default async function AdminPage() {
   const pages = (data || []) as ProductPage[];
 
   return (
-    <main className="min-h-screen bg-[#f6f1e8] px-6 py-10 text-zinc-900">
-      <div className="mx-auto max-w-6xl rounded-[28px] border border-[#e7ddcf] bg-white/75 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.05)] backdrop-blur md:p-10">
+    <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
+      <div className="mx-auto max-w-6xl rounded-[28px] border border-[#ece4d8] bg-white/80 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-10">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold">Minhas páginas</h1>
-            <p className="mt-2 text-zinc-600">Gerencie, edite e abra suas páginas.</p>
+            <p className="mt-2 text-zinc-600">
+              Gerencie, edite, apague e abra suas páginas.
+            </p>
           </div>
 
           <Link
@@ -54,14 +57,14 @@ export default async function AdminPage() {
         )}
 
         {!error && pages.length === 0 && (
-          <div className="mt-8 rounded-2xl border border-[#e7ddcf] bg-[#fbf8f3] p-6 text-zinc-600">
+          <div className="mt-8 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-6 text-zinc-600">
             Nenhuma página criada ainda.
           </div>
         )}
 
         {!error && pages.length > 0 && (
-          <div className="mt-8 overflow-hidden rounded-[24px] border border-[#e7ddcf] bg-[#fbf8f3]">
-            <div className="grid grid-cols-[2fr_1fr_1fr_1fr] gap-4 border-b border-[#e7ddcf] px-5 py-4 text-sm font-semibold">
+          <div className="mt-8 overflow-hidden rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3]">
+            <div className="grid grid-cols-[2fr_1fr_1fr_1.4fr] gap-4 border-b border-[#ece4d8] px-5 py-4 text-sm font-semibold">
               <div>Página</div>
               <div>Status</div>
               <div>Criada em</div>
@@ -71,7 +74,7 @@ export default async function AdminPage() {
             {pages.map((page) => (
               <div
                 key={page.id}
-                className="grid grid-cols-[2fr_1fr_1fr_1fr] gap-4 border-b border-[#e7ddcf] px-5 py-4 last:border-b-0"
+                className="grid grid-cols-[2fr_1fr_1fr_1.4fr] gap-4 border-b border-[#ece4d8] px-5 py-4 last:border-b-0"
               >
                 <div>
                   <div className="font-semibold">{page.title}</div>
@@ -84,7 +87,7 @@ export default async function AdminPage() {
                 <div className="flex flex-wrap gap-2">
                   <Link
                     href={`/editor/${page.id}`}
-                    className="rounded-xl border border-[#ddd1c0] bg-white px-3 py-2 text-sm transition hover:bg-[#faf6ef]"
+                    className="rounded-xl border border-[#e4d8c7] bg-white px-3 py-2 text-sm transition hover:bg-[#faf6ef]"
                   >
                     Editar
                   </Link>
@@ -95,6 +98,8 @@ export default async function AdminPage() {
                   >
                     Abrir
                   </Link>
+
+                  <DeletePageButton id={page.id} />
                 </div>
               </div>
             ))}

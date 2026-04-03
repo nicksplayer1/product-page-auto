@@ -1,85 +1,125 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
-type RouteProps = {
+type Props = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(_request: NextRequest, { params }: RouteProps) {
+export async function PATCH(request: Request, { params }: Props) {
   const { id } = await params;
 
-  const { data, error } = await supabaseAdmin
-    .from("product_pages")
-    .select("*")
-    .eq("id", id)
-    .single();
+  try {
+    const body = await request.json();
 
-  if (error || !data) {
+    const source_url = String(body.source_url || "").trim() || null;
+    const title = String(body.title || "").trim();
+    const price = String(body.price || "").trim() || null;
+    const description = String(body.description || "").trim() || null;
+    const whatsapp_number = String(body.whatsapp_number || "").trim();
+    const slug = String(body.slug || "").trim();
+    const image_urls = Array.isArray(body.image_urls)
+      ? body.image_urls.map((item) => String(item).trim()).filter(Boolean)
+      : [];
+
+    if (!title) {
+      return NextResponse.json(
+        { ok: false, error: "Digite o nome do produto." },
+        { status: 400 }
+      );
+    }
+
+    if (!whatsapp_number) {
+      return NextResponse.json(
+        { ok: false, error: "Digite o WhatsApp." },
+        { status: 400 }
+      );
+    }
+
+    if (!slug) {
+      return NextResponse.json(
+        { ok: false, error: "Digite o slug." },
+        { status: 400 }
+      );
+    }
+
+    const mainImage = image_urls[0] || null;
+    const extraImages = image_urls.slice(1);
+
+    const { error: updateError } = await supabaseAdmin
+      .from("product_pages")
+      .update({
+        source_url,
+        title,
+        price,
+        description,
+        image_url: mainImage,
+        whatsapp_number,
+        slug,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+
+    if (updateError) {
+      return NextResponse.json(
+        { ok: false, error: updateError.message },
+        { status: 500 }
+      );
+    }
+
+    const { error: deleteImagesError } = await supabaseAdmin
+      .from("product_page_images")
+      .delete()
+      .eq("product_page_id", id);
+
+    if (deleteImagesError) {
+      return NextResponse.json(
+        { ok: false, error: deleteImagesError.message },
+        { status: 500 }
+      );
+    }
+
+    if (extraImages.length > 0) {
+      const { error: insertImagesError } = await supabaseAdmin
+        .from("product_page_images")
+        .insert(
+          extraImages.map((image_url, index) => ({
+            product_page_id: id,
+            image_url,
+            sort_order: index + 1,
+          }))
+        );
+
+      if (insertImagesError) {
+        return NextResponse.json(
+          { ok: false, error: insertImagesError.message },
+          { status: 500 }
+        );
+      }
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch {
     return NextResponse.json(
-      { ok: false, error: "Página não encontrada." },
-      { status: 404 }
+      { ok: false, error: "Erro ao salvar alterações." },
+      { status: 500 }
     );
   }
-
-  return NextResponse.json({ ok: true, page: data });
 }
 
-export async function PATCH(request: NextRequest, { params }: RouteProps) {
+export async function DELETE(_: Request, { params }: Props) {
   const { id } = await params;
-  const body = await request.json();
 
-  const payload = {
-    source_url: typeof body.source_url === "string" ? body.source_url.trim() || null : null,
-    title: typeof body.title === "string" ? body.title.trim() : "",
-    price: typeof body.price === "string" ? body.price.trim() || null : null,
-    description:
-      typeof body.description === "string" ? body.description.trim() || null : null,
-    image_url: typeof body.image_url === "string" ? body.image_url.trim() || null : null,
-    whatsapp_number:
-      typeof body.whatsapp_number === "string" ? body.whatsapp_number.trim() : "",
-    slug: typeof body.slug === "string" ? body.slug.trim() : "",
-  };
-
-  if (!payload.title) {
-    return NextResponse.json(
-      { ok: false, error: "Digite o nome do produto." },
-      { status: 400 }
-    );
-  }
-
-  if (!payload.whatsapp_number) {
-    return NextResponse.json(
-      { ok: false, error: "Digite o WhatsApp." },
-      { status: 400 }
-    );
-  }
-
-  if (!payload.slug) {
-    return NextResponse.json(
-      { ok: false, error: "Digite o slug." },
-      { status: 400 }
-    );
-  }
-
-  const { data, error } = await supabaseAdmin
+  const { error } = await supabaseAdmin
     .from("product_pages")
-    .update(payload)
-    .eq("id", id)
-    .select()
-    .single();
+    .delete()
+    .eq("id", id);
 
   if (error) {
-    const isSlugConflict = error.message?.toLowerCase().includes("duplicate");
     return NextResponse.json(
-      {
-        ok: false,
-        error: isSlugConflict
-          ? "Esse slug já existe. Tente outro."
-          : "Erro ao salvar página.",
-      },
-      { status: 400 }
+      { ok: false, error: error.message },
+      { status: 500 }
     );
   }
 
-  return NextResponse.json({ ok: true, page: data });
+  return NextResponse.json({ ok: true });
 }

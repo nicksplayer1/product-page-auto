@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { formatPrice } from "@/lib/format-price";
+import ProductGallery from "@/components/product-gallery";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -22,30 +23,34 @@ export default async function PublicProductPage({ params }: Props) {
 
   if (error || !data) notFound();
 
+  const { data: galleryRows } = await supabaseAdmin
+    .from("product_page_images")
+    .select("image_url, sort_order")
+    .eq("product_page_id", data.id)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  const images = Array.from(
+    new Set(
+      [data.image_url, ...((galleryRows || []).map((row) => row.image_url))]
+        .filter(Boolean)
+        .filter((url) => /^https?:\/\//i.test(String(url)))
+    )
+  ) as string[];
+
   const whatsapp = onlyDigits(data.whatsapp_number || "");
   const message = encodeURIComponent(`Olá! Tenho interesse em ${data.title}.`);
   const whatsappUrl = `https://wa.me/${whatsapp}?text=${message}`;
-  const hasValidImage = !!data.image_url && /^https?:\/\//i.test(String(data.image_url));
 
   return (
-    <main className="min-h-screen bg-[#f6f1e8] px-6 py-10 text-zinc-900">
-      <div className="mx-auto overflow-hidden rounded-[30px] border border-[#e7ddcf] bg-white/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.05)] backdrop-blur md:p-8">
+    <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
+      <div className="mx-auto overflow-hidden rounded-[30px] border border-[#ece4d8] bg-white/85 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-8">
         <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[28px] border border-[#eadfce] bg-[#fbf8f3] p-4">
-            {hasValidImage ? (
-              <img
-                src={data.image_url}
-                alt={data.title}
-                className="w-full rounded-[24px] border border-[#eadfce] bg-white object-cover"
-              />
-            ) : (
-              <div className="flex h-[420px] w-full items-center justify-center rounded-[24px] border border-[#eadfce] bg-white text-zinc-500">
-                Imagem não disponível
-              </div>
-            )}
+          <div className="rounded-[28px] border border-[#ece4d8] bg-[#fbf8f3] p-4">
+            <ProductGallery images={images} title={data.title} />
           </div>
 
-          <div className="rounded-[28px] border border-[#eadfce] bg-[#fbf8f3] p-6 md:p-8">
+          <div className="rounded-[28px] border border-[#ece4d8] bg-[#fbf8f3] p-6 md:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
               Página de produto
             </p>

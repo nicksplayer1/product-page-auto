@@ -20,10 +20,22 @@ export default async function EditorPage({ params }: Props) {
     notFound();
   }
 
+  const { data: galleryRows } = await supabaseAdmin
+    .from("product_page_images")
+    .select("image_url, sort_order")
+    .eq("product_page_id", id)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  const imageUrls = [
+    data.image_url,
+    ...((galleryRows || []).map((row) => row.image_url)),
+  ].filter(Boolean) as string[];
+
   return (
-    <main className="min-h-screen bg-[#f6f1e8] px-6 py-10 text-zinc-900">
-      <div className="mx-auto max-w-5xl rounded-[28px] border border-[#e7ddcf] bg-white/75 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.05)] backdrop-blur md:p-10">
-        <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#eee4d7] bg-[#fbf8f3] p-5">
+    <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
+      <div className="mx-auto max-w-5xl rounded-[28px] border border-[#ece4d8] bg-white/80 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-10">
+        <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <div>
             <h1 className="text-3xl font-bold">Editor da página</h1>
             <p className="mt-2 text-zinc-600">
@@ -33,13 +45,13 @@ export default async function EditorPage({ params }: Props) {
 
           <Link
             href="/admin"
-            className="rounded-2xl border border-[#ddd1c0] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
+            className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
           >
             Ir para admin
           </Link>
         </div>
 
-        <EditorForm product={data} />
+        <EditorForm product={data} imageUrls={imageUrls} />
       </div>
     </main>
   );
