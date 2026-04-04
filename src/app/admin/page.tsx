@@ -27,9 +27,7 @@ function statusLabel(status: string | null) {
 
 export default async function AdminPage() {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
@@ -51,24 +49,19 @@ export default async function AdminPage() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/catalogos"
-              className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]"
-            >
+            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
+              Início
+            </Link>
+
+            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
               Catálogos
             </Link>
 
-            <Link
-              href="/catalogo"
-              className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]"
-            >
+            <Link href="/catalogo" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
               Catálogo geral
             </Link>
 
-            <Link
-              href="/create"
-              className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700"
-            >
+            <Link href="/create" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700">
               Nova página
             </Link>
 
@@ -76,11 +69,7 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        {error && (
-          <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
-            Erro ao carregar páginas.
-          </div>
-        )}
+        {error && <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">Erro ao carregar páginas.</div>}
 
         {!error && pages.length === 0 && (
           <div className="mt-8 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-6 text-zinc-600">
@@ -98,10 +87,7 @@ export default async function AdminPage() {
             </div>
 
             {pages.map((page) => (
-              <div
-                key={page.id}
-                className="grid grid-cols-[2fr_1fr_1fr_1.5fr] gap-4 border-b border-[#ece4d8] px-5 py-4 last:border-b-0"
-              >
+              <div key={page.id} className="grid grid-cols-[2fr_1fr_1fr_1.5fr] gap-4 border-b border-[#ece4d8] px-5 py-4 last:border-b-0">
                 <div>
                   <div className="font-semibold">{page.title}</div>
                   <div className="mt-1 break-all text-sm text-zinc-500">/{page.slug}</div>
@@ -111,17 +97,11 @@ export default async function AdminPage() {
                 <div className="text-sm text-zinc-600">{formatDate(page.created_at)}</div>
 
                 <div className="flex flex-wrap gap-2">
-                  <Link
-                    href={`/editor/${page.id}`}
-                    className="rounded-xl border border-[#e4d8c7] bg-white px-3 py-2 text-sm transition hover:bg-[#faf6ef]"
-                  >
+                  <Link href={`/editor/${page.id}`} className="rounded-xl border border-[#e4d8c7] bg-white px-3 py-2 text-sm transition hover:bg-[#faf6ef]">
                     Editar
                   </Link>
 
-                  <Link
-                    href={`/${page.slug}`}
-                    className="rounded-xl bg-zinc-900 px-3 py-2 text-sm text-white transition hover:bg-zinc-700"
-                  >
+                  <Link href={`/${page.slug}`} className="rounded-xl bg-zinc-900 px-3 py-2 text-sm text-white transition hover:bg-zinc-700">
                     Abrir
                   </Link>
 

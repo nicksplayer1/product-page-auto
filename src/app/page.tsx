@@ -21,24 +21,23 @@ export default function HomePage() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
-                <Link
-                  href="/create"
-                  className="rounded-2xl bg-zinc-900 px-6 py-3 font-medium text-white transition hover:bg-zinc-700"
-                >
-                  Criar página automática
+                <Link href="/create" className="rounded-2xl bg-zinc-900 px-6 py-3 font-medium text-white transition hover:bg-zinc-700">
+                  Criar página
                 </Link>
 
-                <Link
-                  href="/catalogo"
-                  className="rounded-2xl border border-[#e4d8c7] bg-[#fbf8f3] px-6 py-3 font-medium text-zinc-800 transition hover:bg-white"
-                >
-                  Ver catálogo
+                <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-[#fbf8f3] px-6 py-3 font-medium text-zinc-800 transition hover:bg-white">
+                  Meu painel
                 </Link>
 
-                <Link
-                  href="/login"
-                  className="rounded-2xl border border-[#e4d8c7] bg-[#fbf8f3] px-6 py-3 font-medium text-zinc-800 transition hover:bg-white"
-                >
+                <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-[#fbf8f3] px-6 py-3 font-medium text-zinc-800 transition hover:bg-white">
+                  Meus catálogos
+                </Link>
+
+                <Link href="/catalogo" className="rounded-2xl border border-[#e4d8c7] bg-[#fbf8f3] px-6 py-3 font-medium text-zinc-800 transition hover:bg-white">
+                  Catálogo geral
+                </Link>
+
+                <Link href="/login" className="rounded-2xl border border-[#e4d8c7] bg-[#fbf8f3] px-6 py-3 font-medium text-zinc-800 transition hover:bg-white">
                   Entrar
                 </Link>
               </div>
@@ -58,17 +57,21 @@ export default function HomePage() {
                   <p className="mt-3 text-3xl font-semibold">R$ 79,90</p>
 
                   <p className="mt-4 text-sm leading-7 text-zinc-600">
-                    Visual limpo, botão de compra no WhatsApp e link próprio para
-                    divulgar com rapidez.
+                    Visual limpo, botão de compra no WhatsApp, compartilhar e link próprio para divulgar com rapidez.
                   </p>
 
                   <div className="mt-6 rounded-2xl border border-dashed border-[#e4d8c7] bg-[#f9f5ef] p-8 text-center text-sm text-zinc-500">
                     Galeria de imagens do produto
                   </div>
 
-                  <button className="mt-6 w-full rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">
-                    Comprar pelo WhatsApp
-                  </button>
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <button className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">
+                      Comprar pelo WhatsApp
+                    </button>
+                    <button className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">
+                      Compartilhar
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

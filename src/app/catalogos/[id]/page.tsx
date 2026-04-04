@@ -23,10 +23,7 @@ type CatalogItem = {
 export default async function CatalogManagePage({ params }: Props) {
   const { id } = await params;
   const supabase = await createSupabaseServerClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
@@ -37,9 +34,7 @@ export default async function CatalogManagePage({ params }: Props) {
     .eq("user_id", user.id)
     .single();
 
-  if (catalogError || !catalog) {
-    notFound();
-  }
+  if (catalogError || !catalog) notFound();
 
   const { data: productsData } = await supabase
     .from("product_pages")
@@ -68,17 +63,19 @@ export default async function CatalogManagePage({ params }: Props) {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/catalogos"
-              className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
-            >
-              Voltar
+            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
+              Início
             </Link>
 
-            <Link
-              href={`/c/${catalog.slug}`}
-              className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700"
-            >
+            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
+              Meus catálogos
+            </Link>
+
+            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
+              Minhas páginas
+            </Link>
+
+            <Link href={`/c/${catalog.slug}`} className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">
               Abrir catálogo
             </Link>
           </div>
@@ -89,11 +86,7 @@ export default async function CatalogManagePage({ params }: Props) {
             Você precisa publicar produtos antes de colocá-los em um catálogo.
           </div>
         ) : (
-          <CatalogItemsForm
-            catalogId={catalog.id}
-            products={products}
-            selectedItems={selectedItems}
-          />
+          <CatalogItemsForm catalogId={catalog.id} products={products} selectedItems={selectedItems} />
         )}
       </div>
     </main>

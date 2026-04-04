@@ -19,9 +19,7 @@ function formatDate(value: string | null) {
 
 export default async function CatalogsPage() {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
@@ -43,27 +41,25 @@ export default async function CatalogsPage() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/admin"
-              className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]"
-            >
+            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
+              Início
+            </Link>
+
+            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
               Minhas páginas
             </Link>
 
-            <Link
-              href="/catalogos/create"
-              className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700"
-            >
+            <Link href="/catalogo" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
+              Catálogo geral
+            </Link>
+
+            <Link href="/catalogos/create" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700">
               Novo catálogo
             </Link>
           </div>
         </div>
 
-        {error && (
-          <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
-            Erro ao carregar catálogos.
-          </div>
-        )}
+        {error && <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">Erro ao carregar catálogos.</div>}
 
         {!error && catalogs.length === 0 && (
           <div className="mt-8 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-6 text-zinc-600">
@@ -74,31 +70,18 @@ export default async function CatalogsPage() {
         {!error && catalogs.length > 0 && (
           <div className="mt-8 grid gap-5 md:grid-cols-2">
             {catalogs.map((catalog) => (
-              <div
-                key={catalog.id}
-                className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-6"
-              >
+              <div key={catalog.id} className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-6">
                 <h2 className="text-2xl font-bold">{catalog.name}</h2>
                 <p className="mt-2 text-sm text-zinc-500">/c/{catalog.slug}</p>
-                <p className="mt-4 min-h-[48px] text-zinc-600">
-                  {catalog.description || "Sem descrição."}
-                </p>
-                <p className="mt-4 text-sm text-zinc-500">
-                  Criado em: {formatDate(catalog.created_at)}
-                </p>
+                <p className="mt-4 min-h-[48px] text-zinc-600">{catalog.description || "Sem descrição."}</p>
+                <p className="mt-4 text-sm text-zinc-500">Criado em: {formatDate(catalog.created_at)}</p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <Link
-                    href={`/catalogos/${catalog.id}`}
-                    className="rounded-2xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-700"
-                  >
+                  <Link href={`/catalogos/${catalog.id}`} className="rounded-2xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">
                     Gerenciar produtos
                   </Link>
 
-                  <Link
-                    href={`/c/${catalog.slug}`}
-                    className="rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
-                  >
+                  <Link href={`/c/${catalog.slug}`} className="rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
                     Abrir catálogo
                   </Link>
                 </div>

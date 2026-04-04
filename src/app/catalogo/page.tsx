@@ -38,24 +38,26 @@ export default async function CatalogPage() {
       <div className="mx-auto max-w-7xl rounded-[28px] border border-[#ece4d8] bg-white/80 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-10">
         <div className="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <div>
-            <h1 className="text-3xl font-bold">Catálogo</h1>
+            <h1 className="text-3xl font-bold">Catálogo geral</h1>
             <p className="mt-2 text-zinc-600">
               Veja todos os seus produtos publicados em uma única página.
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/"
-              className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
-            >
+            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
               Início
             </Link>
 
-            <Link
-              href="/create"
-              className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700"
-            >
+            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
+              Meu painel
+            </Link>
+
+            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
+              Catálogos
+            </Link>
+
+            <Link href="/create" className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">
               Nova página
             </Link>
           </div>
