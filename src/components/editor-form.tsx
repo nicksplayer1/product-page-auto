@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import ImageFieldsManager from "@/components/image-fields-manager";
 
 type Product = {
   id: string;
@@ -41,23 +42,6 @@ export default function EditorForm({
     () => imageFields.map((item) => item.trim()).filter(Boolean),
     [imageFields]
   );
-
-  function updateImage(index: number, value: string) {
-    setImageFields((current) =>
-      current.map((item, i) => (i === index ? value : item))
-    );
-  }
-
-  function addImageField() {
-    setImageFields((current) => [...current, ""]);
-  }
-
-  function removeImageField(index: number) {
-    setImageFields((current) => {
-      const next = current.filter((_, i) => i !== index);
-      return next.length > 0 ? next : [""];
-    });
-  }
 
   async function saveOnly() {
     setMessage("");
@@ -156,43 +140,7 @@ export default function EditorForm({
         />
       </Field>
 
-      <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-700">
-          Imagens do produto
-        </label>
-
-        <div className="rounded-2xl border border-[#e4d8c7] bg-white p-3">
-          <div className="space-y-3">
-            {imageFields.map((value, index) => (
-              <div key={index} className="grid grid-cols-[1fr_auto] gap-3">
-                <input
-                  type="text"
-                  value={value}
-                  onChange={(e) => updateImage(index, e.target.value)}
-                  placeholder={`Imagem ${index + 1} - https://...`}
-                  className="w-full rounded-xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm outline-none transition focus:border-zinc-900"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => removeImageField(index)}
-                  className="rounded-xl border border-red-200 px-4 py-3 text-sm text-red-600 transition hover:bg-red-50"
-                >
-                  Remover
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={addImageField}
-            className="mt-4 rounded-xl border border-[#e4d8c7] px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
-          >
-            + Adicionar imagem
-          </button>
-        </div>
-      </div>
+      <ImageFieldsManager images={imageFields} onChange={setImageFields} />
 
       <Field label="WhatsApp">
         <input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
@@ -238,6 +186,7 @@ export default function EditorForm({
     </div>
   );
 }
+
 function Field({
   label,
   children,
