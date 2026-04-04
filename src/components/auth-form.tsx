@@ -1,4 +1,4 @@
-\"use client\";
+"use client";
 
 import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -22,14 +22,23 @@ export default function AuthForm() {
 
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
         if (error) throw error;
+
         router.push(nextPath);
         router.refresh();
         return;
       }
 
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
       if (error) throw error;
 
       if (data.session) {
@@ -76,7 +85,9 @@ export default function AuthForm() {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="mb-2 block text-sm font-medium text-zinc-700">Email</label>
+          <label className="mb-2 block text-sm font-medium text-zinc-700">
+            Email
+          </label>
           <input
             type="email"
             value={email}
@@ -87,7 +98,9 @@ export default function AuthForm() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-zinc-700">Senha</label>
+          <label className="mb-2 block text-sm font-medium text-zinc-700">
+            Senha
+          </label>
           <input
             type="password"
             value={password}
