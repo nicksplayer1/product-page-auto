@@ -1,37 +1,35 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
 import { slugify } from "@/lib/slugify";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const supabase = await createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
+    if (!user) {
+      return NextResponse.json({ ok: false, error: "Não autenticado." }, { status: 401 });
+    }
+
+    const body = await request.json();
     const source_url = String(body.source_url || "").trim() || null;
     const title = String(body.title || "").trim();
     const price = String(body.price || "").trim() || null;
     const description = String(body.description || "").trim() || null;
     const whatsapp_number = String(body.whatsapp_number || "").trim();
 
-    const rawImageUrls: unknown[] = Array.isArray(body.image_urls)
-      ? (body.image_urls as unknown[])
-      : [];
-
+    const rawImageUrls: unknown[] = Array.isArray(body.image_urls) ? (body.image_urls as unknown[]) : [];
     const image_urls = rawImageUrls
       .map((item: unknown) => String(item).trim())
       .filter((item: string) => Boolean(item));
 
     if (!title) {
-      return NextResponse.json(
-        { ok: false, error: "Digite o nome do produto." },
-        { status: 400 }
-      );
+      return NextResponse.json({ ok: false, error: "Digite o nome do produto." }, { status: 400 });
     }
 
     if (!whatsapp_number) {
-      return NextResponse.json(
-        { ok: false, error: "Digite o WhatsApp." },
-        { status: 400 }
-      );
+      return NextResponse.json({ ok: false, error: "Digite o WhatsApp." }, { status: 400 });
     }
 
     const slug = `${slugify(title)}-${Date.now()}`;
@@ -42,6 +40,7 @@ export async function POST(request: Request) {
       .from("product_pages")
       .insert([
         {
+          user_id: user.id,
           source_url,
           title,
           price,
@@ -57,10 +56,7 @@ export async function POST(request: Request) {
       .single();
 
     if (error || !data) {
-      return NextResponse.json(
-        { ok: false, error: error?.message || "Erro ao criar página." },
-        { status: 500 }
-      );
+      return NextResponse.json({ ok: false, error: error?.message || "Erro ao criar página." }, { status: 500 });
     }
 
     if (extraImages.length > 0) {
@@ -75,22 +71,12 @@ export async function POST(request: Request) {
         );
 
       if (imagesError) {
-        return NextResponse.json(
-          { ok: false, error: imagesError.message },
-          { status: 500 }
-        );
+        return NextResponse.json({ ok: false, error: imagesError.message }, { status: 500 });
       }
     }
 
-    return NextResponse.json({
-      ok: true,
-      id: data.id,
-      slug: data.slug,
-    });
+    return NextResponse.json({ ok: true, id: data.id, slug: data.slug });
   } catch {
-    return NextResponse.json(
-      { ok: false, error: "Erro ao criar página." },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: "Erro ao criar página." }, { status: 500 });
   }
 }

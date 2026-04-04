@@ -36,10 +36,10 @@ export default function HomePage() {
                 </Link>
 
                 <Link
-                  href="/admin"
+                  href="/login"
                   className="rounded-2xl border border-[#e4d8c7] bg-[#fbf8f3] px-6 py-3 font-medium text-zinc-800 transition hover:bg-white"
                 >
-                  Minhas páginas
+                  Entrar
                 </Link>
               </div>
             </div>

@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { redirect } from "next/navigation";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
 import DeletePageButton from "@/components/delete-page-button";
+import LogoutButton from "@/components/logout-button";
 
 export const dynamic = "force-dynamic";
 
@@ -24,9 +26,15 @@ function statusLabel(status: string | null) {
 }
 
 export default async function AdminPage() {
-  const { data, error } = await supabaseAdmin
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) redirect("/login");
+
+  const { data, error } = await supabase
     .from("product_pages")
     .select("id, title, slug, status, created_at")
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
   const pages = (data || []) as ProductPage[];
@@ -37,9 +45,7 @@ export default async function AdminPage() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold">Minhas páginas</h1>
-            <p className="mt-2 text-zinc-600">
-              Gerencie, edite, apague e abra suas páginas.
-            </p>
+            <p className="mt-2 text-zinc-600">Logado como: {user.email}</p>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -56,18 +62,16 @@ export default async function AdminPage() {
             >
               Nova página
             </Link>
+
+            <LogoutButton />
           </div>
         </div>
 
-        {error && (
-          <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
-            Erro ao carregar páginas.
-          </div>
-        )}
+        {error && <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">Erro ao carregar páginas.</div>}
 
         {!error && pages.length === 0 && (
           <div className="mt-8 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-6 text-zinc-600">
-            Nenhuma página criada ainda.
+            Você ainda não criou nenhuma página.
           </div>
         )}
 
@@ -81,10 +85,7 @@ export default async function AdminPage() {
             </div>
 
             {pages.map((page) => (
-              <div
-                key={page.id}
-                className="grid grid-cols-[2fr_1fr_1fr_1.5fr] gap-4 border-b border-[#ece4d8] px-5 py-4 last:border-b-0"
-              >
+              <div key={page.id} className="grid grid-cols-[2fr_1fr_1fr_1.5fr] gap-4 border-b border-[#ece4d8] px-5 py-4 last:border-b-0">
                 <div>
                   <div className="font-semibold">{page.title}</div>
                   <div className="mt-1 break-all text-sm text-zinc-500">/{page.slug}</div>

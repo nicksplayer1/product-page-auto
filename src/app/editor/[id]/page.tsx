@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { notFound, redirect } from "next/navigation";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
 import EditorForm from "@/components/editor-form";
 import ProductGallery from "@/components/product-gallery";
 
@@ -10,28 +10,28 @@ type Props = {
 
 export default async function EditorPage({ params }: Props) {
   const { id } = await params;
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const { data, error } = await supabaseAdmin
+  if (!user) redirect("/login");
+
+  const { data, error } = await supabase
     .from("product_pages")
     .select("*")
     .eq("id", id)
+    .eq("user_id", user.id)
     .single();
 
-  if (error || !data) {
-    notFound();
-  }
+  if (error || !data) notFound();
 
-  const { data: galleryRows } = await supabaseAdmin
+  const { data: galleryRows } = await supabase
     .from("product_page_images")
     .select("image_url, sort_order")
     .eq("product_page_id", id)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
 
-  const imageUrls = [
-    data.image_url,
-    ...((galleryRows || []).map((row) => row.image_url)),
-  ].filter(Boolean) as string[];
+  const imageUrls = [data.image_url, ...((galleryRows || []).map((row) => row.image_url))].filter(Boolean) as string[];
 
   return (
     <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
@@ -39,23 +39,15 @@ export default async function EditorPage({ params }: Props) {
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <div>
             <h1 className="text-3xl font-bold">Editor da página</h1>
-            <p className="mt-2 text-zinc-600">
-              Revise, salve e publique sua página de produto.
-            </p>
+            <p className="mt-2 text-zinc-600">Revise, salve e publique sua página de produto.</p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/"
-              className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
-            >
+            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
               Voltar ao início
             </Link>
 
-            <Link
-              href="/catalogo"
-              className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700"
-            >
+            <Link href="/catalogo" className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">
               Ver catálogo
             </Link>
           </div>
