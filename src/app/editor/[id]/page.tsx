@@ -46,17 +46,17 @@ export default async function EditorPage({ params }: Props) {
 
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/admin"
+              href="/"
               className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
             >
-              Ir para admin
+              Voltar ao início
             </Link>
 
             <Link
-              href={`/${data.slug}`}
+              href="/catalogo"
               className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700"
             >
-              Ver página
+              Ver catálogo
             </Link>
           </div>
         </div>

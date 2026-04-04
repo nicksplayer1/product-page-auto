@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, ReactNode, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -11,19 +11,32 @@ export default function CreatePage() {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [imageUrlsText, setImageUrlsText] = useState("");
+  const [imageUrls, setImageUrls] = useState([""]);
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const parsedImages = useMemo(
-    () =>
-      imageUrlsText
-        .split("\n")
-        .map((item) => item.trim())
-        .filter(Boolean),
-    [imageUrlsText]
+    () => imageUrls.map((item) => item.trim()).filter(Boolean),
+    [imageUrls]
   );
+
+  function updateImage(index: number, value: string) {
+    setImageUrls((current) =>
+      current.map((item, i) => (i === index ? value : item))
+    );
+  }
+
+  function addImageField() {
+    setImageUrls((current) => [...current, ""]);
+  }
+
+  function removeImageField(index: number) {
+    setImageUrls((current) => {
+      const next = current.filter((_, i) => i !== index);
+      return next.length > 0 ? next : [""];
+    });
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -73,17 +86,17 @@ export default function CreatePage() {
 
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/catalogo"
+              href="/"
               className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
             >
-              Ver catálogo
+              Voltar ao início
             </Link>
 
             <Link
-              href="/admin"
+              href="/catalogo"
               className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700"
             >
-              Ir para admin
+              Ver catálogo
             </Link>
           </div>
         </div>
@@ -184,15 +197,43 @@ export default function CreatePage() {
                 />
               </Field>
 
-              <Field label="Imagens do produto">
-                <textarea
-                  value={imageUrlsText}
-                  onChange={(e) => setImageUrlsText(e.target.value)}
-                  rows={7}
-                  placeholder={"Cole uma URL por linha\nhttps://imagem1.jpg\nhttps://imagem2.jpg"}
-                  className="min-h-[210px] w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 font-mono text-sm outline-none transition focus:border-zinc-900"
-                />
-              </Field>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-zinc-700">
+                  Imagens do produto
+                </label>
+
+                <div className="rounded-2xl border border-[#e4d8c7] bg-white p-3">
+                  <div className="space-y-3">
+                    {imageUrls.map((value, index) => (
+                      <div key={index} className="grid grid-cols-[1fr_auto] gap-3">
+                        <input
+                          type="text"
+                          value={value}
+                          onChange={(e) => updateImage(index, e.target.value)}
+                          placeholder={`Imagem ${index + 1} - https://...`}
+                          className="w-full rounded-xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm outline-none transition focus:border-zinc-900"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => removeImageField(index)}
+                          className="rounded-xl border border-red-200 px-4 py-3 text-sm text-red-600 transition hover:bg-red-50"
+                        >
+                          Remover
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={addImageField}
+                    className="mt-4 rounded-xl border border-[#e4d8c7] px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef]"
+                  >
+                    + Adicionar imagem
+                  </button>
+                </div>
+              </div>
 
               <Field label="WhatsApp">
                 <input
@@ -230,7 +271,7 @@ function Field({
   children,
 }: {
   label: string;
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <div>
