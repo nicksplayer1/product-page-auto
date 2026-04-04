@@ -1,7 +1,14 @@
 import Link from "next/link";
 import AuthForm from "@/components/auth-form";
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams?: Promise<{ next?: string }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = searchParams ? await searchParams : undefined;
+  const nextPath = params?.next || "/admin";
+
   return (
     <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
       <div className="mx-auto max-w-5xl rounded-[28px] border border-[#ece4d8] bg-white/80 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-10">
@@ -22,7 +29,7 @@ export default function LoginPage() {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr]">
-          <AuthForm />
+          <AuthForm nextPath={nextPath} />
 
           <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-6">
             <h2 className="text-2xl font-bold">O que muda agora</h2>

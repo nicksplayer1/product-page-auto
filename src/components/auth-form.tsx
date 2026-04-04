@@ -1,13 +1,15 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-export default function AuthForm() {
+type AuthFormProps = {
+  nextPath?: string;
+};
+
+export default function AuthForm({ nextPath = "/admin" }: AuthFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const nextPath = searchParams.get("next") || "/admin";
 
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
