@@ -30,7 +30,9 @@ export default function CreatePage() {
     try {
       const res = await fetch("/api/product-pages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           source_url: sourceUrl,
           title,
@@ -43,7 +45,9 @@ export default function CreatePage() {
 
       const json = await res.json();
 
-      if (!res.ok || !json.ok) throw new Error(json.error || "Erro ao criar página.");
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error || "Erro ao criar página.");
+      }
 
       router.push(`/editor/${json.id}`);
     } catch (err: unknown) {
@@ -59,7 +63,9 @@ export default function CreatePage() {
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <div>
             <h1 className="text-3xl font-bold">Criar página de produto</h1>
-            <p className="mt-2 text-zinc-600">Preencha os dados, revise a prévia e continue para o editor.</p>
+            <p className="mt-2 text-zinc-600">
+              Preencha os dados, escolha a capa e continue para o editor.
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -88,7 +94,11 @@ export default function CreatePage() {
             <div className="rounded-[24px] border border-[#ece4d8] bg-white p-4">
               <div className="aspect-[4/3] overflow-hidden rounded-[20px] border border-[#ece4d8] bg-[#fcfaf7]">
                 {parsedImages[0] ? (
-                  <img src={parsedImages[0]} alt={title || "Produto"} className="h-full w-full object-cover" />
+                  <img
+                    src={parsedImages[0]}
+                    alt={title || "Produto"}
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
                   <div className="flex h-full items-center justify-center text-sm text-zinc-500">
                     Primeira imagem do produto
@@ -97,19 +107,35 @@ export default function CreatePage() {
               </div>
 
               <div className="mt-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Prévia da página</p>
-                <h3 className="mt-3 text-2xl font-bold leading-tight">{title || "Nome do produto"}</h3>
-                <p className="mt-3 text-2xl font-semibold">{price ? `R$ ${price}` : "Preço do produto"}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                  Prévia da página
+                </p>
+
+                <h3 className="mt-3 text-2xl font-bold leading-tight">
+                  {title || "Nome do produto"}
+                </h3>
+
+                <p className="mt-3 text-2xl font-semibold">
+                  {price ? `R$ ${price}` : "Preço do produto"}
+                </p>
+
                 <p className="mt-4 line-clamp-4 whitespace-pre-line text-sm leading-7 text-zinc-600">
                   {description || "A descrição do produto aparecerá aqui."}
                 </p>
 
                 <div className="mt-5 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4 text-sm text-zinc-600">
                   <p><strong>Total de imagens:</strong> {parsedImages.length}</p>
-                  <p className="mt-2 break-all"><strong>WhatsApp:</strong> {whatsappNumber || "Ainda não preenchido"}</p>
+                  <p className="mt-2"><strong>Capa atual:</strong> {parsedImages[0] ? "definida" : "não definida"}</p>
+                  <p className="mt-2 break-all">
+                    <strong>WhatsApp:</strong>{" "}
+                    {whatsappNumber || "Ainda não preenchido"}
+                  </p>
                 </div>
 
-                <button type="button" className="mt-5 w-full rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">
+                <button
+                  type="button"
+                  className="mt-5 w-full rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white"
+                >
                   Comprar pelo WhatsApp
                 </button>
               </div>

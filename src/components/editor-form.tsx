@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import ImageFieldsManager from "@/components/image-fields-manager";
 
 type Product = {
@@ -22,8 +21,6 @@ export default function EditorForm({
   product: Product;
   imageUrls: string[];
 }) {
-  const router = useRouter();
-
   const [sourceUrl, setSourceUrl] = useState(product.source_url || "");
   const [title, setTitle] = useState(product.title || "");
   const [price, setPrice] = useState(product.price || "");
@@ -66,7 +63,6 @@ export default function EditorForm({
       if (!res.ok || !json.ok) throw new Error(json.error || "Erro ao salvar.");
 
       setMessage("Alterações salvas com sucesso.");
-      router.refresh();
     } catch (err: unknown) {
       setMessage(err instanceof Error ? err.message : "Erro ao salvar.");
     } finally {
@@ -109,7 +105,6 @@ export default function EditorForm({
 
       setStatus("published");
       setMessage("Página publicada com sucesso.");
-      router.refresh();
     } catch (err: unknown) {
       setMessage(err instanceof Error ? err.message : "Erro ao publicar.");
     } finally {
@@ -153,8 +148,9 @@ export default function EditorForm({
       <div className="rounded-2xl border border-[#ece4d8] bg-white p-5">
         <p><strong>Status:</strong> {status}</p>
         <p className="mt-2 break-all"><strong>Preview:</strong> /{slug}</p>
+        <p className="mt-2 text-sm text-zinc-600">Total de imagens: {parsedImages.length}</p>
         <p className="mt-2 text-sm text-zinc-600">
-          Total de imagens: {parsedImages.length}
+          Capa atual: {parsedImages[0] ? "primeira imagem da lista" : "não definida"}
         </p>
       </div>
 
