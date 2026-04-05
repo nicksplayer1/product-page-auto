@@ -1,4 +1,3 @@
-\
 import { notFound, redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import EditorLiveShell from "@/components/editor-live-shell";
