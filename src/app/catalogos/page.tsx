@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import CatalogDeleteButton from "@/components/catalog-delete-button";
 
 export const dynamic = "force-dynamic";
 
@@ -41,30 +42,17 @@ export default async function CatalogsPage() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
-              Início
-            </Link>
-
-            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
-              Minhas páginas
-            </Link>
-
-            <Link href="/catalogo" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
-              Catálogo geral
-            </Link>
-
-            <Link href="/catalogos/create" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700">
-              Novo catálogo
-            </Link>
+            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">Início</Link>
+            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">Minhas páginas</Link>
+            <Link href="/catalogo" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">Catálogo geral</Link>
+            <Link href="/catalogos/create" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700">Novo catálogo</Link>
           </div>
         </div>
 
         {error && <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">Erro ao carregar catálogos.</div>}
 
         {!error && catalogs.length === 0 && (
-          <div className="mt-8 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-6 text-zinc-600">
-            Você ainda não criou nenhum catálogo.
-          </div>
+          <div className="mt-8 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-6 text-zinc-600">Você ainda não criou nenhum catálogo.</div>
         )}
 
         {!error && catalogs.length > 0 && (
@@ -77,13 +65,10 @@ export default async function CatalogsPage() {
                 <p className="mt-4 text-sm text-zinc-500">Criado em: {formatDate(catalog.created_at)}</p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <Link href={`/catalogos/${catalog.id}`} className="rounded-2xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">
-                    Gerenciar produtos
-                  </Link>
-
-                  <Link href={`/c/${catalog.slug}`} className="rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
-                    Abrir catálogo
-                  </Link>
+                  <Link href={`/catalogos/${catalog.id}`} className="rounded-2xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">Gerenciar produtos</Link>
+                  <Link href={`/catalogos/${catalog.id}/edit`} className="rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Editar</Link>
+                  <Link href={`/c/${catalog.slug}`} className="rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Abrir catálogo</Link>
+                  <CatalogDeleteButton id={catalog.id} />
                 </div>
               </div>
             ))}

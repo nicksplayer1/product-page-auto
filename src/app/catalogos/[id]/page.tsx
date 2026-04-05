@@ -63,21 +63,11 @@ export default async function CatalogManagePage({ params }: Props) {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
-              Início
-            </Link>
-
-            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
-              Meus catálogos
-            </Link>
-
-            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
-              Minhas páginas
-            </Link>
-
-            <Link href={`/c/${catalog.slug}`} className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">
-              Abrir catálogo
-            </Link>
+            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Início</Link>
+            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Meus catálogos</Link>
+            <Link href={`/catalogos/${catalog.id}/edit`} className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Editar catálogo</Link>
+            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Minhas páginas</Link>
+            <Link href={`/c/${catalog.slug}`} className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">Abrir catálogo</Link>
           </div>
         </div>
 
