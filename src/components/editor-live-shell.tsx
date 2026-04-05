@@ -13,6 +13,12 @@ type Product = {
   price: string | null;
   description: string | null;
   whatsapp_number: string;
+  website_url?: string | null;
+  shopee_url?: string | null;
+  mercadolivre_url?: string | null;
+  instagram_url?: string | null;
+  custom_button_label?: string | null;
+  custom_button_url?: string | null;
   slug: string;
   status: string | null;
   video_url?: string | null;
@@ -34,6 +40,12 @@ export default function EditorLiveShell({
   );
   const [videoUrl, setVideoUrl] = useState(product.video_url || "");
   const [whatsappNumber, setWhatsappNumber] = useState(product.whatsapp_number || "");
+  const [websiteUrl, setWebsiteUrl] = useState(product.website_url || "");
+  const [shopeeUrl, setShopeeUrl] = useState(product.shopee_url || "");
+  const [mercadolivreUrl, setMercadolivreUrl] = useState(product.mercadolivre_url || "");
+  const [instagramUrl, setInstagramUrl] = useState(product.instagram_url || "");
+  const [customButtonLabel, setCustomButtonLabel] = useState(product.custom_button_label || "");
+  const [customButtonUrl, setCustomButtonUrl] = useState(product.custom_button_url || "");
   const [slug, setSlug] = useState(product.slug || "");
   const [status, setStatus] = useState(product.status || "draft");
   const [loadingSave, setLoadingSave] = useState(false);
@@ -61,6 +73,12 @@ export default function EditorLiveShell({
           image_urls: parsedImages,
           video_url: videoUrl,
           whatsapp_number: whatsappNumber,
+          website_url: websiteUrl,
+          shopee_url: shopeeUrl,
+          mercadolivre_url: mercadolivreUrl,
+          instagram_url: instagramUrl,
+          custom_button_label: customButtonLabel,
+          custom_button_url: customButtonUrl,
           slug,
         }),
       });
@@ -92,6 +110,12 @@ export default function EditorLiveShell({
           image_urls: parsedImages,
           video_url: videoUrl,
           whatsapp_number: whatsappNumber,
+          website_url: websiteUrl,
+          shopee_url: shopeeUrl,
+          mercadolivre_url: mercadolivreUrl,
+          instagram_url: instagramUrl,
+          custom_button_label: customButtonLabel,
+          custom_button_url: customButtonUrl,
           slug,
         }),
       });
@@ -121,7 +145,7 @@ export default function EditorLiveShell({
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <div>
             <h1 className="text-3xl font-bold">Editor da página</h1>
-            <p className="mt-2 text-zinc-600">Agora você pode usar vídeo como mídia principal do produto.</p>
+            <p className="mt-2 text-zinc-600">Agora você pode adicionar links externos e mais botões de ação.</p>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -152,10 +176,22 @@ export default function EditorLiveShell({
                 <p className="mt-4 whitespace-pre-line text-sm leading-7 text-zinc-600">{description || "A descrição do produto aparecerá aqui."}</p>
 
                 <div className="mt-5 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4 text-sm text-zinc-600">
-                  <p><strong>Total de imagens:</strong> {parsedImages.length}</p>
-                  <p className="mt-2"><strong>Vídeo:</strong> {videoUrl ? "definido" : "não definido"}</p>
-                  <p className="mt-2 break-all"><strong>Preview:</strong> /{slug}</p>
-                  <p className="mt-2"><strong>Status:</strong> {status}</p>
+                  <p><strong>Status:</strong> {status}</p>
+                  <p className="mt-2"><strong>WhatsApp:</strong> {whatsappNumber ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Site:</strong> {websiteUrl ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Shopee:</strong> {shopeeUrl ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Mercado Livre:</strong> {mercadolivreUrl ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Instagram:</strong> {instagramUrl ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Personalizado:</strong> {customButtonUrl ? "sim" : "não"}</p>
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {whatsappNumber && <button type="button" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">WhatsApp</button>}
+                  {websiteUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Site</button>}
+                  {shopeeUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Shopee</button>}
+                  {mercadolivreUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Mercado Livre</button>}
+                  {instagramUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Instagram</button>}
+                  {customButtonUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">{customButtonLabel || "Abrir link"}</button>}
                 </div>
               </div>
             </div>
@@ -184,6 +220,30 @@ export default function EditorLiveShell({
 
               <Field label="WhatsApp">
                 <input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Link do site">
+                <input value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Link Shopee">
+                <input value={shopeeUrl} onChange={(e) => setShopeeUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Link Mercado Livre">
+                <input value={mercadolivreUrl} onChange={(e) => setMercadolivreUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Link Instagram">
+                <input value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Texto do botão personalizado">
+                <input value={customButtonLabel} onChange={(e) => setCustomButtonLabel(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Link do botão personalizado">
+                <input value={customButtonUrl} onChange={(e) => setCustomButtonUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
               </Field>
 
               <Field label="Slug">

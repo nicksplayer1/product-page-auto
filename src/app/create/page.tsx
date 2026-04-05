@@ -16,6 +16,12 @@ export default function CreatePage() {
   const [imageUrls, setImageUrls] = useState([""]);
   const [videoUrl, setVideoUrl] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [shopeeUrl, setShopeeUrl] = useState("");
+  const [mercadolivreUrl, setMercadolivreUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [customButtonLabel, setCustomButtonLabel] = useState("");
+  const [customButtonUrl, setCustomButtonUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -43,6 +49,12 @@ export default function CreatePage() {
           image_urls: parsedImages,
           video_url: videoUrl,
           whatsapp_number: whatsappNumber,
+          website_url: websiteUrl,
+          shopee_url: shopeeUrl,
+          mercadolivre_url: mercadolivreUrl,
+          instagram_url: instagramUrl,
+          custom_button_label: customButtonLabel,
+          custom_button_url: customButtonUrl,
         }),
       });
 
@@ -67,7 +79,7 @@ export default function CreatePage() {
           <div>
             <h1 className="text-3xl font-bold">Criar página de produto</h1>
             <p className="mt-2 text-zinc-600">
-              Agora você também pode colocar vídeo no produto.
+              Agora você pode adicionar links externos e mais botões de ação.
             </p>
           </div>
 
@@ -114,14 +126,22 @@ export default function CreatePage() {
                 </p>
 
                 <div className="mt-5 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4 text-sm text-zinc-600">
-                  <p><strong>Total de imagens:</strong> {parsedImages.length}</p>
-                  <p className="mt-2"><strong>Vídeo:</strong> {videoUrl ? "definido" : "não definido"}</p>
-                  <p className="mt-2 break-all"><strong>WhatsApp:</strong> {whatsappNumber || "Ainda não preenchido"}</p>
+                  <p><strong>WhatsApp:</strong> {whatsappNumber ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Site:</strong> {websiteUrl ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Shopee:</strong> {shopeeUrl ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Mercado Livre:</strong> {mercadolivreUrl ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Instagram:</strong> {instagramUrl ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Personalizado:</strong> {customButtonUrl ? "sim" : "não"}</p>
                 </div>
 
-                <button type="button" className="mt-5 w-full rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">
-                  Comprar pelo WhatsApp
-                </button>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {whatsappNumber && <button type="button" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">WhatsApp</button>}
+                  {websiteUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Site</button>}
+                  {shopeeUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Shopee</button>}
+                  {mercadolivreUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Mercado Livre</button>}
+                  {instagramUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Instagram</button>}
+                  {customButtonUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">{customButtonLabel || "Abrir link"}</button>}
+                </div>
               </div>
             </div>
           </div>
@@ -149,6 +169,30 @@ export default function CreatePage() {
 
               <Field label="WhatsApp">
                 <input type="text" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="5564999999999" className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Link do site">
+                <input type="text" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://seusite.com" className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Link Shopee">
+                <input type="text" value={shopeeUrl} onChange={(e) => setShopeeUrl(e.target.value)} placeholder="https://shopee..." className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Link Mercado Livre">
+                <input type="text" value={mercadolivreUrl} onChange={(e) => setMercadolivreUrl(e.target.value)} placeholder="https://mercadolivre..." className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Link Instagram">
+                <input type="text" value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} placeholder="https://instagram.com/..." className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Texto do botão personalizado">
+                <input type="text" value={customButtonLabel} onChange={(e) => setCustomButtonLabel(e.target.value)} placeholder="Ex: Comprar agora" className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              </Field>
+
+              <Field label="Link do botão personalizado">
+                <input type="text" value={customButtonUrl} onChange={(e) => setCustomButtonUrl(e.target.value)} placeholder="https://..." className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
               </Field>
 
               {error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>}

@@ -9,6 +9,11 @@ function normalizeImageUrls(value: unknown) {
     : [];
 }
 
+function normalizeOptional(value: unknown) {
+  const text = String(value || "").trim();
+  return text || null;
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = await createSupabaseServerClient();
@@ -25,12 +30,18 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    const source_url = String(body.source_url || "").trim() || null;
+    const source_url = normalizeOptional(body.source_url);
     const title = String(body.title || "").trim();
-    const price = String(body.price || "").trim() || null;
-    const description = String(body.description || "").trim() || null;
+    const price = normalizeOptional(body.price);
+    const description = normalizeOptional(body.description);
     const whatsapp_number = String(body.whatsapp_number || "").trim();
-    const video_url = String(body.video_url || "").trim() || null;
+    const video_url = normalizeOptional(body.video_url);
+    const website_url = normalizeOptional(body.website_url);
+    const shopee_url = normalizeOptional(body.shopee_url);
+    const mercadolivre_url = normalizeOptional(body.mercadolivre_url);
+    const instagram_url = normalizeOptional(body.instagram_url);
+    const custom_button_label = normalizeOptional(body.custom_button_label);
+    const custom_button_url = normalizeOptional(body.custom_button_url);
     const image_urls = normalizeImageUrls(body.image_urls);
 
     if (!title) {
@@ -40,9 +51,9 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!whatsapp_number) {
+    if (!whatsapp_number && !website_url && !shopee_url && !mercadolivre_url && !instagram_url && !custom_button_url) {
       return NextResponse.json(
-        { ok: false, error: "Digite o WhatsApp." },
+        { ok: false, error: "Preencha ao menos uma forma de ação: WhatsApp ou algum link." },
         { status: 400 }
       );
     }
@@ -63,6 +74,12 @@ export async function POST(request: Request) {
           image_url: mainImage,
           video_url,
           whatsapp_number,
+          website_url,
+          shopee_url,
+          mercadolivre_url,
+          instagram_url,
+          custom_button_label,
+          custom_button_url,
           slug,
           status: "draft",
           mode: "auto",

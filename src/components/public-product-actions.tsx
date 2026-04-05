@@ -1,58 +1,136 @@
 "use client";
 
-import { useState } from "react";
-
 type Props = {
   title: string;
-  whatsappNumber: string | null;
+  whatsappNumber?: string | null;
+  websiteUrl?: string | null;
+  shopeeUrl?: string | null;
+  mercadolivreUrl?: string | null;
+  instagramUrl?: string | null;
+  customButtonLabel?: string | null;
+  customButtonUrl?: string | null;
 };
 
-function onlyDigits(value: string | null) {
-  return String(value || "").replace(/\D/g, "");
-}
+export default function PublicProductActions({
+  title,
+  whatsappNumber,
+  websiteUrl,
+  shopeeUrl,
+  mercadolivreUrl,
+  instagramUrl,
+  customButtonLabel,
+  customButtonUrl,
+}: Props) {
+  const pageUrl =
+    typeof window !== "undefined" ? window.location.href : "";
 
-export default function PublicProductActions({ title, whatsappNumber }: Props) {
-  const [message, setMessage] = useState("");
+  const whatsappHref = whatsappNumber
+    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Olá! Tenho interesse em: ${title}`)}`
+    : null;
 
-  const whatsapp = onlyDigits(whatsappNumber);
-  const whatsappUrl = `https://wa.me/${whatsapp}?text=${encodeURIComponent(`Olá! Tenho interesse em ${title}.`)}`;
-
-  async function copyLink() {
+  async function handleCopyLink() {
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      setMessage("Link copiado com sucesso.");
+      await navigator.clipboard.writeText(pageUrl);
+      alert("Link copiado.");
     } catch {
-      setMessage("Não foi possível copiar o link.");
+      alert("Não foi possível copiar o link.");
     }
   }
 
-  async function shareLink() {
+  async function handleShare() {
     try {
       if (navigator.share) {
-        await navigator.share({ title, url: window.location.href });
-        return;
+        await navigator.share({
+          title,
+          url: pageUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(pageUrl);
+        alert("Link copiado.");
       }
-      await copyLink();
     } catch {}
   }
 
-  return (
-    <div className="mt-8">
-      <div className="flex flex-wrap gap-3">
-        <a href={whatsappUrl} target="_blank" rel="noreferrer" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700">
-          Comprar pelo WhatsApp
-        </a>
+  const actions = [
+    whatsappHref
+      ? {
+          label: "Comprar pelo WhatsApp",
+          href: whatsappHref,
+          primary: true,
+        }
+      : null,
+    websiteUrl
+      ? {
+          label: "Ver no site",
+          href: websiteUrl,
+          primary: false,
+        }
+      : null,
+    shopeeUrl
+      ? {
+          label: "Ver na Shopee",
+          href: shopeeUrl,
+          primary: false,
+        }
+      : null,
+    mercadolivreUrl
+      ? {
+          label: "Ver no Mercado Livre",
+          href: mercadolivreUrl,
+          primary: false,
+        }
+      : null,
+    instagramUrl
+      ? {
+          label: "Instagram",
+          href: instagramUrl,
+          primary: false,
+        }
+      : null,
+    customButtonUrl
+      ? {
+          label: customButtonLabel || "Abrir link",
+          href: customButtonUrl,
+          primary: false,
+        }
+      : null,
+  ].filter(Boolean) as { label: string; href: string; primary: boolean }[];
 
-        <button type="button" onClick={copyLink} className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
+  return (
+    <div className="mt-8 space-y-3">
+      <div className="flex flex-wrap gap-3">
+        {actions.map((action) => (
+          <a
+            key={`${action.label}-${action.href}`}
+            href={action.href}
+            target="_blank"
+            rel="noreferrer"
+            className={
+              action.primary
+                ? "rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700"
+                : "rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]"
+            }
+          >
+            {action.label}
+          </a>
+        ))}
+
+        <button
+          type="button"
+          onClick={handleCopyLink}
+          className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]"
+        >
           Copiar link
         </button>
 
-        <button type="button" onClick={shareLink} className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]">
+        <button
+          type="button"
+          onClick={handleShare}
+          className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]"
+        >
           Compartilhar
         </button>
       </div>
-
-      {message && <div className="mt-4 rounded-2xl border border-[#ece4d8] bg-white px-4 py-3 text-sm text-zinc-700">{message}</div>}
     </div>
   );
 }

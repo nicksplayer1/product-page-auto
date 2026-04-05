@@ -18,6 +18,12 @@ type ProductPage = {
   image_url: string | null;
   video_url: string | null;
   whatsapp_number: string | null;
+  website_url: string | null;
+  shopee_url: string | null;
+  mercadolivre_url: string | null;
+  instagram_url: string | null;
+  custom_button_label: string | null;
+  custom_button_url: string | null;
   status: string | null;
 };
 
@@ -26,7 +32,7 @@ export default async function PublicProductPage({ params }: Props) {
 
   const { data, error } = await supabaseAdmin
     .from("product_pages")
-    .select("id, title, slug, price, description, image_url, video_url, whatsapp_number, status")
+    .select("id, title, slug, price, description, image_url, video_url, whatsapp_number, website_url, shopee_url, mercadolivre_url, instagram_url, custom_button_label, custom_button_url, status")
     .eq("slug", slug)
     .eq("status", "published")
     .single();
@@ -69,7 +75,17 @@ export default async function PublicProductPage({ params }: Props) {
             <h1 className="mt-4 text-3xl font-bold leading-tight md:text-5xl">{product.title}</h1>
             <p className="mt-5 text-4xl font-semibold">{formatPrice(product.price)}</p>
             <p className="mt-6 whitespace-pre-line text-base leading-8 text-zinc-700">{product.description || "Sem descrição disponível."}</p>
-            <PublicProductActions title={product.title} whatsappNumber={product.whatsapp_number} />
+
+            <PublicProductActions
+              title={product.title}
+              whatsappNumber={product.whatsapp_number}
+              websiteUrl={product.website_url}
+              shopeeUrl={product.shopee_url}
+              mercadolivreUrl={product.mercadolivre_url}
+              instagramUrl={product.instagram_url}
+              customButtonLabel={product.custom_button_label}
+              customButtonUrl={product.custom_button_url}
+            />
           </div>
         </div>
       </div>
