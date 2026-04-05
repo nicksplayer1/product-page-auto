@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useRef, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 type Props = {
   videoUrl: string;
@@ -20,21 +21,33 @@ export default function VideoUploadField({ videoUrl, onChange }: Props) {
     setMessage("");
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-      const res = await fetch("/api/upload-video", {
-        method: "POST",
-        body: formData,
-      });
-
-      const json = await res.json();
-
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error || "Erro ao enviar vídeo.");
+      if (!user) {
+        throw new Error("Faça login antes de enviar vídeo.");
       }
 
-      onChange(String(json.url || ""));
+      const extension = file.name.split(".").pop() || "mp4";
+      const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "-");
+      const filePath = `${user.id}/${Date.now()}-${safeName}.${extension}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("product-videos")
+        .upload(filePath, file, {
+          upsert: false,
+        });
+
+      if (uploadError) {
+        throw new Error(uploadError.message);
+      }
+
+      const { data } = supabase.storage
+        .from("product-videos")
+        .getPublicUrl(filePath);
+
+      onChange(data.publicUrl);
       setMessage("Vídeo enviado com sucesso.");
     } catch (err: unknown) {
       setMessage(err instanceof Error ? err.message : "Erro ao enviar vídeo.");
