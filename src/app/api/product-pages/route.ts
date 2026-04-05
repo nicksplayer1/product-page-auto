@@ -30,6 +30,7 @@ export async function POST(request: Request) {
     const price = String(body.price || "").trim() || null;
     const description = String(body.description || "").trim() || null;
     const whatsapp_number = String(body.whatsapp_number || "").trim();
+    const video_url = String(body.video_url || "").trim() || null;
     const image_urls = normalizeImageUrls(body.image_urls);
 
     if (!title) {
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
           price,
           description,
           image_url: mainImage,
+          video_url,
           whatsapp_number,
           slug,
           status: "draft",

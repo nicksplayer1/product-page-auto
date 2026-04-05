@@ -16,6 +16,7 @@ type ProductPage = {
   price: string | null;
   description: string | null;
   image_url: string | null;
+  video_url: string | null;
   whatsapp_number: string | null;
   status: string | null;
 };
@@ -25,7 +26,7 @@ export default async function PublicProductPage({ params }: Props) {
 
   const { data, error } = await supabaseAdmin
     .from("product_pages")
-    .select("id, title, slug, price, description, image_url, whatsapp_number, status")
+    .select("id, title, slug, price, description, image_url, video_url, whatsapp_number, status")
     .eq("slug", slug)
     .eq("status", "published")
     .single();
@@ -54,7 +55,13 @@ export default async function PublicProductPage({ params }: Props) {
 
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-4">
-            <ProductGallery images={images} title={product.title} />
+            {product.video_url ? (
+              <div className="rounded-[20px] border border-[#ece4d8] bg-white p-3">
+                <video src={product.video_url} controls className="aspect-[4/3] w-full rounded-[16px] object-cover" />
+              </div>
+            ) : (
+              <ProductGallery images={images} title={product.title} />
+            )}
           </div>
 
           <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-6">

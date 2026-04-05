@@ -50,6 +50,7 @@ export async function PATCH(request: Request, { params }: Props) {
     const price = String(body.price || "").trim() || null;
     const description = String(body.description || "").trim() || null;
     const whatsapp_number = String(body.whatsapp_number || "").trim();
+    const video_url = String(body.video_url || "").trim() || null;
     const slug = slugify(String(body.slug || title || "").trim());
     const image_urls = normalizeImageUrls(body.image_urls);
 
@@ -85,6 +86,7 @@ export async function PATCH(request: Request, { params }: Props) {
         price,
         description,
         image_url: mainImage,
+        video_url,
         whatsapp_number,
         slug,
       })

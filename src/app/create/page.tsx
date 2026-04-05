@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ImageFieldsManager from "@/components/image-fields-manager";
+import VideoUploadField from "@/components/video-upload-field";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function CreatePage() {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrls, setImageUrls] = useState([""]);
+  const [videoUrl, setVideoUrl] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -39,6 +41,7 @@ export default function CreatePage() {
           price,
           description,
           image_urls: parsedImages,
+          video_url: videoUrl,
           whatsapp_number: whatsappNumber,
         }),
       });
@@ -64,26 +67,15 @@ export default function CreatePage() {
           <div>
             <h1 className="text-3xl font-bold">Criar página de produto</h1>
             <p className="mt-2 text-zinc-600">
-              Preencha os dados, escolha a capa e continue para o editor.
+              Agora você também pode colocar vídeo no produto.
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
-              Início
-            </Link>
-
-            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
-              Meu painel
-            </Link>
-
-            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
-              Meus catálogos
-            </Link>
-
-            <Link href="/catalogo" className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">
-              Catálogo geral
-            </Link>
+            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Início</Link>
+            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Meu painel</Link>
+            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Meus catálogos</Link>
+            <Link href="/catalogo" className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">Catálogo geral</Link>
           </div>
         </div>
 
@@ -93,15 +85,13 @@ export default function CreatePage() {
 
             <div className="rounded-[24px] border border-[#ece4d8] bg-white p-4">
               <div className="aspect-[4/3] overflow-hidden rounded-[20px] border border-[#ece4d8] bg-[#fcfaf7]">
-                {parsedImages[0] ? (
-                  <img
-                    src={parsedImages[0]}
-                    alt={title || "Produto"}
-                    className="h-full w-full object-cover"
-                  />
+                {videoUrl ? (
+                  <video src={videoUrl} controls className="h-full w-full object-cover" />
+                ) : parsedImages[0] ? (
+                  <img src={parsedImages[0]} alt={title || "Produto"} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center text-sm text-zinc-500">
-                    Primeira imagem do produto
+                    Primeira mídia do produto
                   </div>
                 )}
               </div>
@@ -125,17 +115,11 @@ export default function CreatePage() {
 
                 <div className="mt-5 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4 text-sm text-zinc-600">
                   <p><strong>Total de imagens:</strong> {parsedImages.length}</p>
-                  <p className="mt-2"><strong>Capa atual:</strong> {parsedImages[0] ? "definida" : "não definida"}</p>
-                  <p className="mt-2 break-all">
-                    <strong>WhatsApp:</strong>{" "}
-                    {whatsappNumber || "Ainda não preenchido"}
-                  </p>
+                  <p className="mt-2"><strong>Vídeo:</strong> {videoUrl ? "definido" : "não definido"}</p>
+                  <p className="mt-2 break-all"><strong>WhatsApp:</strong> {whatsappNumber || "Ainda não preenchido"}</p>
                 </div>
 
-                <button
-                  type="button"
-                  className="mt-5 w-full rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white"
-                >
+                <button type="button" className="mt-5 w-full rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">
                   Comprar pelo WhatsApp
                 </button>
               </div>
@@ -161,6 +145,7 @@ export default function CreatePage() {
               </Field>
 
               <ImageFieldsManager images={imageUrls} onChange={setImageUrls} />
+              <VideoUploadField videoUrl={videoUrl} onChange={setVideoUrl} />
 
               <Field label="WhatsApp">
                 <input type="text" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="5564999999999" className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
