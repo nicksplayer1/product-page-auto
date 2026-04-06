@@ -6,6 +6,20 @@ import ImageFieldsManager from "@/components/image-fields-manager";
 import ProductMediaGallery from "@/components/product-media-gallery";
 import VideoUploadField from "@/components/video-upload-field";
 
+const themes = [
+  { value: "clean", label: "Clean" },
+  { value: "vitrine", label: "Vitrine" },
+  { value: "oferta", label: "Oferta" },
+  { value: "premium", label: "Premium" },
+];
+
+function themeBox(theme: string) {
+  if (theme === "oferta") return "border-[#f0c3c3] bg-[#fff7f7]";
+  if (theme === "premium") return "border-[#d9ceb9] bg-[#f7f1e7]";
+  if (theme === "vitrine") return "border-[#d6dfef] bg-[#f7faff]";
+  return "border-[#ece4d8] bg-[#fbf8f3]";
+}
+
 type Product = {
   id: string;
   source_url: string | null;
@@ -22,6 +36,7 @@ type Product = {
   slug: string;
   status: string | null;
   video_url?: string | null;
+  theme?: string | null;
 };
 
 export default function EditorLiveShell({
@@ -35,9 +50,7 @@ export default function EditorLiveShell({
   const [title, setTitle] = useState(product.title || "");
   const [price, setPrice] = useState(product.price || "");
   const [description, setDescription] = useState(product.description || "");
-  const [imageFields, setImageFields] = useState(
-    imageUrls.length > 0 ? imageUrls : [""]
-  );
+  const [imageFields, setImageFields] = useState(imageUrls.length > 0 ? imageUrls : [""]);
   const [videoUrl, setVideoUrl] = useState(product.video_url || "");
   const [whatsappNumber, setWhatsappNumber] = useState(product.whatsapp_number || "");
   const [websiteUrl, setWebsiteUrl] = useState(product.website_url || "");
@@ -46,6 +59,7 @@ export default function EditorLiveShell({
   const [instagramUrl, setInstagramUrl] = useState(product.instagram_url || "");
   const [customButtonLabel, setCustomButtonLabel] = useState(product.custom_button_label || "");
   const [customButtonUrl, setCustomButtonUrl] = useState(product.custom_button_url || "");
+  const [theme, setTheme] = useState(product.theme || "clean");
   const [slug, setSlug] = useState(product.slug || "");
   const [status, setStatus] = useState(product.status || "draft");
   const [loadingSave, setLoadingSave] = useState(false);
@@ -79,6 +93,7 @@ export default function EditorLiveShell({
           instagram_url: instagramUrl,
           custom_button_label: customButtonLabel,
           custom_button_url: customButtonUrl,
+          theme,
           slug,
         }),
       });
@@ -116,6 +131,7 @@ export default function EditorLiveShell({
           instagram_url: instagramUrl,
           custom_button_label: customButtonLabel,
           custom_button_url: customButtonUrl,
+          theme,
           slug,
         }),
       });
@@ -145,111 +161,78 @@ export default function EditorLiveShell({
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <div>
             <h1 className="text-3xl font-bold">Editor da página</h1>
-            <p className="mt-2 text-zinc-600">Agora vídeo e imagens aparecem juntos.</p>
+            <p className="mt-2 text-zinc-600">Agora você pode escolher um tema visual.</p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Início</Link>
-            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Meu painel</Link>
-            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Meus catálogos</Link>
-            <Link href="/catalogo" className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">Catálogo geral</Link>
+            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium">Início</Link>
+            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium">Meu painel</Link>
+            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium">Meus catálogos</Link>
+            <Link href="/catalogo" className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white">Catálogo geral</Link>
           </div>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-5">
+          <div className={`rounded-[24px] border p-5 ${themeBox(theme)}`}>
             <h2 className="mb-4 text-xl font-bold">Prévia em tempo real</h2>
 
             <div className="rounded-[24px] border border-[#ece4d8] bg-white p-4">
-              <ProductMediaGallery
-                title={title || "Produto"}
-                images={parsedImages}
-                videoUrl={videoUrl}
-              />
+              <ProductMediaGallery title={title || "Produto"} images={parsedImages} videoUrl={videoUrl} />
 
               <div className="mt-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Prévia da página</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Tema {theme}</p>
                 <h3 className="mt-3 text-2xl font-bold leading-tight">{title || "Nome do produto"}</h3>
                 <p className="mt-3 text-2xl font-semibold">{price ? `R$ ${price}` : "Preço do produto"}</p>
                 <p className="mt-4 whitespace-pre-line text-sm leading-7 text-zinc-600">{description || "A descrição do produto aparecerá aqui."}</p>
-
-                <div className="mt-5 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4 text-sm text-zinc-600">
-                  <p><strong>Status:</strong> {status}</p>
-                  <p className="mt-2"><strong>Total de imagens:</strong> {parsedImages.length}</p>
-                  <p className="mt-2"><strong>Vídeo:</strong> {videoUrl ? "sim" : "não"}</p>
-                </div>
-
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {whatsappNumber && <button type="button" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">WhatsApp</button>}
-                  {websiteUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Site</button>}
-                  {instagramUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Instagram</button>}
-                  {customButtonUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">{customButtonLabel || "Abrir link"}</button>}
-                </div>
               </div>
             </div>
           </div>
 
           <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-5">
             <div className="space-y-5">
-              <Field label="URL do produto">
-                <input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              <Field label="Tema">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {themes.map((item) => (
+                    <button
+                      key={item.value}
+                      type="button"
+                      onClick={() => setTheme(item.value)}
+                      className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium ${
+                        theme === item.value
+                          ? "border-zinc-900 bg-zinc-900 text-white"
+                          : "border-[#e4d8c7] bg-white"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
               </Field>
 
-              <Field label="Nome do produto">
-                <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Preço">
-                <input value={price} onChange={(e) => setPrice(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Descrição">
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={6} className="min-h-[180px] w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
+              <Field label="URL do produto"><input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Nome do produto"><input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Preço"><input value={price} onChange={(e) => setPrice(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Descrição"><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={6} className="min-h-[180px] w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
 
               <ImageFieldsManager images={imageFields} onChange={setImageFields} />
               <VideoUploadField videoUrl={videoUrl} onChange={setVideoUrl} />
 
-              <Field label="WhatsApp">
-                <input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Link do site">
-                <input value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Link Shopee">
-                <input value={shopeeUrl} onChange={(e) => setShopeeUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Link Mercado Livre">
-                <input value={mercadolivreUrl} onChange={(e) => setMercadolivreUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Link Instagram">
-                <input value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Texto do botão personalizado">
-                <input value={customButtonLabel} onChange={(e) => setCustomButtonLabel(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Link do botão personalizado">
-                <input value={customButtonUrl} onChange={(e) => setCustomButtonUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Slug">
-                <input value={slug} onChange={(e) => setSlug(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
+              <Field label="WhatsApp"><input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Link do site"><input value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Link Shopee"><input value={shopeeUrl} onChange={(e) => setShopeeUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Link Mercado Livre"><input value={mercadolivreUrl} onChange={(e) => setMercadolivreUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Link Instagram"><input value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Texto do botão personalizado"><input value={customButtonLabel} onChange={(e) => setCustomButtonLabel(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Link do botão personalizado"><input value={customButtonUrl} onChange={(e) => setCustomButtonUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Slug"><input value={slug} onChange={(e) => setSlug(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
 
               {message && <div className="rounded-2xl border border-[#ece4d8] bg-white px-4 py-3 text-sm text-zinc-700">{message}</div>}
 
               <div className="flex flex-wrap gap-3">
-                <button type="button" onClick={saveOnly} disabled={loadingSave} className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef] disabled:opacity-60">
+                <button type="button" onClick={saveOnly} disabled={loadingSave} className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">
                   {loadingSave ? "Salvando..." : "Salvar alterações"}
                 </button>
-
-                <button type="button" onClick={saveAndPublish} disabled={loadingPublish} className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60">
+                <button type="button" onClick={saveAndPublish} disabled={loadingPublish} className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">
                   {loadingPublish ? "Publicando..." : "Salvar e publicar"}
                 </button>
               </div>

@@ -7,6 +7,20 @@ import ImageFieldsManager from "@/components/image-fields-manager";
 import ProductMediaGallery from "@/components/product-media-gallery";
 import VideoUploadField from "@/components/video-upload-field";
 
+const themes = [
+  { value: "clean", label: "Clean" },
+  { value: "vitrine", label: "Vitrine" },
+  { value: "oferta", label: "Oferta" },
+  { value: "premium", label: "Premium" },
+];
+
+function themeBox(theme: string) {
+  if (theme === "oferta") return "border-[#f0c3c3] bg-[#fff7f7]";
+  if (theme === "premium") return "border-[#d9ceb9] bg-[#f7f1e7]";
+  if (theme === "vitrine") return "border-[#d6dfef] bg-[#f7faff]";
+  return "border-[#ece4d8] bg-[#fbf8f3]";
+}
+
 export default function CreatePage() {
   const router = useRouter();
 
@@ -23,6 +37,7 @@ export default function CreatePage() {
   const [instagramUrl, setInstagramUrl] = useState("");
   const [customButtonLabel, setCustomButtonLabel] = useState("");
   const [customButtonUrl, setCustomButtonUrl] = useState("");
+  const [theme, setTheme] = useState("clean");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -39,9 +54,7 @@ export default function CreatePage() {
     try {
       const res = await fetch("/api/product-pages", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           source_url: sourceUrl,
           title,
@@ -56,14 +69,12 @@ export default function CreatePage() {
           instagram_url: instagramUrl,
           custom_button_label: customButtonLabel,
           custom_button_url: customButtonUrl,
+          theme,
         }),
       });
 
       const json = await res.json();
-
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error || "Erro ao criar página.");
-      }
+      if (!res.ok || !json.ok) throw new Error(json.error || "Erro ao criar página.");
 
       router.push(`/editor/${json.id}`);
     } catch (err: unknown) {
@@ -79,115 +90,73 @@ export default function CreatePage() {
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <div>
             <h1 className="text-3xl font-bold">Criar página de produto</h1>
-            <p className="mt-2 text-zinc-600">
-              Agora vídeo e imagens aparecem juntos na prévia.
-            </p>
+            <p className="mt-2 text-zinc-600">Agora você pode escolher um tema visual.</p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Início</Link>
-            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Meu painel</Link>
-            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">Meus catálogos</Link>
-            <Link href="/catalogo" className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-700">Catálogo geral</Link>
+            <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium">Início</Link>
+            <Link href="/admin" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium">Meu painel</Link>
+            <Link href="/catalogos" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium">Meus catálogos</Link>
+            <Link href="/catalogo" className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white">Catálogo geral</Link>
           </div>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-5">
+          <div className={`rounded-[24px] border p-5 ${themeBox(theme)}`}>
             <h2 className="mb-4 text-xl font-bold">Prévia rápida</h2>
 
             <div className="rounded-[24px] border border-[#ece4d8] bg-white p-4">
-              <ProductMediaGallery
-                title={title || "Produto"}
-                images={parsedImages}
-                videoUrl={videoUrl}
-              />
+              <ProductMediaGallery title={title || "Produto"} images={parsedImages} videoUrl={videoUrl} />
 
               <div className="mt-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                  Prévia da página
-                </p>
-
-                <h3 className="mt-3 text-2xl font-bold leading-tight">
-                  {title || "Nome do produto"}
-                </h3>
-
-                <p className="mt-3 text-2xl font-semibold">
-                  {price ? `R$ ${price}` : "Preço do produto"}
-                </p>
-
-                <p className="mt-4 line-clamp-4 whitespace-pre-line text-sm leading-7 text-zinc-600">
-                  {description || "A descrição do produto aparecerá aqui."}
-                </p>
-
-                <div className="mt-5 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4 text-sm text-zinc-600">
-                  <p><strong>Total de imagens:</strong> {parsedImages.length}</p>
-                  <p className="mt-2"><strong>Vídeo:</strong> {videoUrl ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Ações ativas:</strong> {[whatsappNumber, websiteUrl, shopeeUrl, mercadolivreUrl, instagramUrl, customButtonUrl].filter(Boolean).length}</p>
-                </div>
-
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {whatsappNumber && <button type="button" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">WhatsApp</button>}
-                  {websiteUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Site</button>}
-                  {instagramUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Instagram</button>}
-                  {customButtonUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">{customButtonLabel || "Abrir link"}</button>}
-                </div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Tema {theme}</p>
+                <h3 className="mt-3 text-2xl font-bold leading-tight">{title || "Nome do produto"}</h3>
+                <p className="mt-3 text-2xl font-semibold">{price ? `R$ ${price}` : "Preço do produto"}</p>
+                <p className="mt-4 line-clamp-4 whitespace-pre-line text-sm leading-7 text-zinc-600">{description || "A descrição do produto aparecerá aqui."}</p>
               </div>
             </div>
           </div>
 
           <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-5">
             <form onSubmit={handleSubmit} className="space-y-5">
-              <Field label="URL do produto">
-                <input type="text" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="https://..." className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
+              <Field label="Tema">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {themes.map((item) => (
+                    <button
+                      key={item.value}
+                      type="button"
+                      onClick={() => setTheme(item.value)}
+                      className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium ${
+                        theme === item.value
+                          ? "border-zinc-900 bg-zinc-900 text-white"
+                          : "border-[#e4d8c7] bg-white"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
               </Field>
 
-              <Field label="Nome do produto">
-                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Organizador Multiuso Premium" className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Preço">
-                <input type="text" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Ex: 79,90" className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Descrição">
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descreva o produto..." rows={6} className="min-h-[180px] w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
+              <Field label="URL do produto"><input type="text" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Nome do produto"><input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Preço"><input type="text" value={price} onChange={(e) => setPrice(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Descrição"><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={6} className="min-h-[180px] w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
 
               <ImageFieldsManager images={imageUrls} onChange={setImageUrls} />
               <VideoUploadField videoUrl={videoUrl} onChange={setVideoUrl} />
 
-              <Field label="WhatsApp">
-                <input type="text" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="5564999999999" className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Link do site">
-                <input type="text" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://seusite.com" className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Link Shopee">
-                <input type="text" value={shopeeUrl} onChange={(e) => setShopeeUrl(e.target.value)} placeholder="https://shopee..." className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Link Mercado Livre">
-                <input type="text" value={mercadolivreUrl} onChange={(e) => setMercadolivreUrl(e.target.value)} placeholder="https://mercadolivre..." className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Link Instagram">
-                <input type="text" value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} placeholder="https://instagram.com/..." className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Texto do botão personalizado">
-                <input type="text" value={customButtonLabel} onChange={(e) => setCustomButtonLabel(e.target.value)} placeholder="Ex: Comprar agora" className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
-
-              <Field label="Link do botão personalizado">
-                <input type="text" value={customButtonUrl} onChange={(e) => setCustomButtonUrl(e.target.value)} placeholder="https://..." className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 outline-none transition focus:border-zinc-900" />
-              </Field>
+              <Field label="WhatsApp"><input type="text" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Link do site"><input type="text" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Link Shopee"><input type="text" value={shopeeUrl} onChange={(e) => setShopeeUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Link Mercado Livre"><input type="text" value={mercadolivreUrl} onChange={(e) => setMercadolivreUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Link Instagram"><input type="text" value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Texto do botão personalizado"><input type="text" value={customButtonLabel} onChange={(e) => setCustomButtonLabel(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
+              <Field label="Link do botão personalizado"><input type="text" value={customButtonUrl} onChange={(e) => setCustomButtonUrl(e.target.value)} className="w-full rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3" /></Field>
 
               {error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>}
 
-              <button type="submit" disabled={loading} className="w-full rounded-2xl bg-zinc-900 px-5 py-4 font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60">
+              <button type="submit" disabled={loading} className="w-full rounded-2xl bg-zinc-900 px-5 py-4 font-medium text-white">
                 {loading ? "Criando..." : "Criar e continuar"}
               </button>
             </form>

@@ -42,6 +42,7 @@ export async function POST(request: Request) {
     const instagram_url = normalizeOptional(body.instagram_url);
     const custom_button_label = normalizeOptional(body.custom_button_label);
     const custom_button_url = normalizeOptional(body.custom_button_url);
+    const theme = String(body.theme || "clean").trim() || "clean";
     const image_urls = normalizeImageUrls(body.image_urls);
 
     if (!title) {
@@ -80,6 +81,7 @@ export async function POST(request: Request) {
           instagram_url,
           custom_button_label,
           custom_button_url,
+          theme,
           slug,
           status: "draft",
           mode: "auto",

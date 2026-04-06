@@ -62,6 +62,7 @@ export async function PATCH(request: Request, { params }: Props) {
     const instagram_url = normalizeOptional(body.instagram_url);
     const custom_button_label = normalizeOptional(body.custom_button_label);
     const custom_button_url = normalizeOptional(body.custom_button_url);
+    const theme = String(body.theme || "clean").trim() || "clean";
     const slug = slugify(String(body.slug || title || "").trim());
     const image_urls = normalizeImageUrls(body.image_urls);
 
@@ -105,6 +106,7 @@ export async function PATCH(request: Request, { params }: Props) {
         instagram_url,
         custom_button_label,
         custom_button_url,
+        theme,
         slug,
       })
       .eq("id", id)

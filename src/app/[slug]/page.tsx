@@ -24,15 +24,23 @@ type ProductPage = {
   instagram_url: string | null;
   custom_button_label: string | null;
   custom_button_url: string | null;
+  theme: string | null;
   status: string | null;
 };
+
+function themeBox(theme: string | null) {
+  if (theme === "oferta") return "border-[#f0c3c3] bg-[#fff7f7]";
+  if (theme === "premium") return "border-[#d9ceb9] bg-[#f7f1e7]";
+  if (theme === "vitrine") return "border-[#d6dfef] bg-[#f7faff]";
+  return "border-[#ece4d8] bg-[#fbf8f3]";
+}
 
 export default async function PublicProductPage({ params }: Props) {
   const { slug } = await params;
 
   const { data, error } = await supabaseAdmin
     .from("product_pages")
-    .select("id, title, slug, price, description, image_url, video_url, whatsapp_number, website_url, shopee_url, mercadolivre_url, instagram_url, custom_button_label, custom_button_url, status")
+    .select("id, title, slug, price, description, image_url, video_url, whatsapp_number, website_url, shopee_url, mercadolivre_url, instagram_url, custom_button_label, custom_button_url, theme, status")
     .eq("slug", slug)
     .eq("status", "published")
     .single();
@@ -55,23 +63,23 @@ export default async function PublicProductPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
-      <div className="mx-auto max-w-7xl rounded-[28px] border border-[#ece4d8] bg-white/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-10">
-        <div className="mb-6 flex flex-wrap justify-end gap-3">
-          <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
+      <div className={`mx-auto max-w-7xl rounded-[28px] border bg-white/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-10 ${themeBox(product.theme)}`}>
+        <div className="mb-6 flex flex-wrap justify-between gap-3">
+          <div className="rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium">
+            Tema: {product.theme || "clean"}
+          </div>
+
+          <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium">
             Início
           </Link>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-4">
-            <ProductMediaGallery
-              title={product.title}
-              images={images}
-              videoUrl={product.video_url}
-            />
+          <div className="rounded-[24px] border border-[#ece4d8] bg-white p-4">
+            <ProductMediaGallery title={product.title} images={images} videoUrl={product.video_url} />
           </div>
 
-          <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-6">
+          <div className="rounded-[24px] border border-[#ece4d8] bg-white p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Página de produto</p>
             <h1 className="mt-4 text-3xl font-bold leading-tight md:text-5xl">{product.title}</h1>
             <p className="mt-5 text-4xl font-semibold">{formatPrice(product.price)}</p>
