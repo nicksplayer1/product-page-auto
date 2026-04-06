@@ -39,12 +39,24 @@ type Product = {
   theme?: string | null;
 };
 
+type Analytics = {
+  totalClicks: number;
+  last7DaysClicks: number;
+  byButton: Array<{
+    buttonType: string;
+    label: string;
+    total: number;
+  }>;
+};
+
 export default function EditorLiveShell({
   product,
   imageUrls,
+  analytics,
 }: {
   product: Product;
   imageUrls: string[];
+  analytics: Analytics;
 }) {
   const [sourceUrl, setSourceUrl] = useState(product.source_url || "");
   const [title, setTitle] = useState(product.title || "");
@@ -161,7 +173,7 @@ export default function EditorLiveShell({
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <div>
             <h1 className="text-3xl font-bold">Editor da página</h1>
-            <p className="mt-2 text-zinc-600">Agora você pode escolher um tema visual.</p>
+            <p className="mt-2 text-zinc-600">Agora com analytics simples de cliques.</p>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -184,6 +196,42 @@ export default function EditorLiveShell({
                 <h3 className="mt-3 text-2xl font-bold leading-tight">{title || "Nome do produto"}</h3>
                 <p className="mt-3 text-2xl font-semibold">{price ? `R$ ${price}` : "Preço do produto"}</p>
                 <p className="mt-4 whitespace-pre-line text-sm leading-7 text-zinc-600">{description || "A descrição do produto aparecerá aqui."}</p>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-[24px] border border-[#ece4d8] bg-white p-5">
+              <h3 className="text-xl font-bold">Analytics simples</h3>
+
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4">
+                  <p className="text-sm text-zinc-500">Total de cliques</p>
+                  <p className="mt-2 text-3xl font-bold">{analytics.totalClicks}</p>
+                </div>
+
+                <div className="rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4">
+                  <p className="text-sm text-zinc-500">Últimos 7 dias</p>
+                  <p className="mt-2 text-3xl font-bold">{analytics.last7DaysClicks}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4">
+                <p className="text-sm font-medium text-zinc-700">Cliques por botão</p>
+
+                {analytics.byButton.length === 0 ? (
+                  <p className="mt-3 text-sm text-zinc-500">Ainda não há cliques registrados.</p>
+                ) : (
+                  <div className="mt-3 space-y-3">
+                    {analytics.byButton.map((item) => (
+                      <div
+                        key={item.buttonType}
+                        className="flex items-center justify-between rounded-xl border border-[#ece4d8] bg-white px-4 py-3"
+                      >
+                        <span className="text-sm font-medium">{item.label}</span>
+                        <span className="text-sm font-semibold">{item.total}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

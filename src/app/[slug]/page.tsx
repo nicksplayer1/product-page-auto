@@ -100,6 +100,7 @@ export default async function PublicProductPage({ params }: Props) {
             </p>
 
             <PublicProductActions
+              productId={product.id}
               title={product.title}
               whatsappNumber={product.whatsapp_number}
               websiteUrl={product.website_url}

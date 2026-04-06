@@ -1,6 +1,7 @@
 "use client";
 
 type Props = {
+  productId: string;
   title: string;
   whatsappNumber?: string | null;
   websiteUrl?: string | null;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export default function PublicProductActions({
+  productId,
   title,
   whatsappNumber,
   websiteUrl,
@@ -28,9 +30,40 @@ export default function PublicProductActions({
     ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Olá! Tenho interesse em: ${title}`)}`
     : null;
 
+  function trackClick(buttonType: string, destinationUrl?: string | null) {
+    const payload = JSON.stringify({
+      product_page_id: productId,
+      button_type: buttonType,
+      destination_url: destinationUrl || null,
+    });
+
+    try {
+      if (navigator.sendBeacon) {
+        const blob = new Blob([payload], { type: "application/json" });
+        navigator.sendBeacon("/api/track-click", blob);
+        return;
+      }
+    } catch {}
+
+    fetch("/api/track-click", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: payload,
+      keepalive: true,
+    }).catch(() => {});
+  }
+
+  function openExternal(buttonType: string, url: string) {
+    trackClick(buttonType, url);
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
   async function handleCopyLink() {
     try {
       await navigator.clipboard.writeText(pageUrl);
+      trackClick("copy_link", pageUrl);
       alert("Link copiado.");
     } catch {
       alert("Não foi possível copiar o link.");
@@ -44,8 +77,10 @@ export default function PublicProductActions({
           title,
           url: pageUrl,
         });
+        trackClick("share", pageUrl);
       } else {
         await navigator.clipboard.writeText(pageUrl);
+        trackClick("share", pageUrl);
         alert("Link copiado.");
       }
     } catch {}
@@ -56,6 +91,7 @@ export default function PublicProductActions({
       ? {
           label: "Comprar pelo WhatsApp",
           href: whatsappHref,
+          buttonType: "whatsapp",
           primary: true,
         }
       : null,
@@ -63,6 +99,7 @@ export default function PublicProductActions({
       ? {
           label: "Ver no site",
           href: websiteUrl,
+          buttonType: "website",
           primary: false,
         }
       : null,
@@ -70,6 +107,7 @@ export default function PublicProductActions({
       ? {
           label: "Ver na Shopee",
           href: shopeeUrl,
+          buttonType: "shopee",
           primary: false,
         }
       : null,
@@ -77,6 +115,7 @@ export default function PublicProductActions({
       ? {
           label: "Ver no Mercado Livre",
           href: mercadolivreUrl,
+          buttonType: "mercadolivre",
           primary: false,
         }
       : null,
@@ -84,6 +123,7 @@ export default function PublicProductActions({
       ? {
           label: "Instagram",
           href: instagramUrl,
+          buttonType: "instagram",
           primary: false,
         }
       : null,
@@ -91,20 +131,25 @@ export default function PublicProductActions({
       ? {
           label: customButtonLabel || "Abrir link",
           href: customButtonUrl,
+          buttonType: "custom",
           primary: false,
         }
       : null,
-  ].filter(Boolean) as { label: string; href: string; primary: boolean }[];
+  ].filter(Boolean) as {
+    label: string;
+    href: string;
+    buttonType: string;
+    primary: boolean;
+  }[];
 
   return (
     <div className="mt-8 space-y-3">
       <div className="grid gap-3 sm:flex sm:flex-wrap">
         {actions.map((action) => (
-          <a
+          <button
             key={`${action.label}-${action.href}`}
-            href={action.href}
-            target="_blank"
-            rel="noreferrer"
+            type="button"
+            onClick={() => openExternal(action.buttonType, action.href)}
             className={
               action.primary
                 ? "inline-flex w-full items-center justify-center rounded-2xl bg-zinc-900 px-5 py-3 text-center font-medium text-white transition hover:bg-zinc-700 sm:w-auto"
@@ -112,7 +157,7 @@ export default function PublicProductActions({
             }
           >
             {action.label}
-          </a>
+          </button>
         ))}
 
         <button
