@@ -98,7 +98,7 @@ export default function PublicProductActions({
 
   return (
     <div className="mt-8 space-y-3">
-      <div className="flex flex-wrap gap-3">
+      <div className="grid gap-3 sm:flex sm:flex-wrap">
         {actions.map((action) => (
           <a
             key={`${action.label}-${action.href}`}
@@ -107,8 +107,8 @@ export default function PublicProductActions({
             rel="noreferrer"
             className={
               action.primary
-                ? "rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700"
-                : "rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]"
+                ? "inline-flex w-full items-center justify-center rounded-2xl bg-zinc-900 px-5 py-3 text-center font-medium text-white transition hover:bg-zinc-700 sm:w-auto"
+                : "inline-flex w-full items-center justify-center rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-center font-medium transition hover:bg-[#faf6ef] sm:w-auto"
             }
           >
             {action.label}
@@ -118,7 +118,7 @@ export default function PublicProductActions({
         <button
           type="button"
           onClick={handleCopyLink}
-          className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]"
+          className="inline-flex w-full items-center justify-center rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-center font-medium transition hover:bg-[#faf6ef] sm:w-auto"
         >
           Copiar link
         </button>
@@ -126,7 +126,7 @@ export default function PublicProductActions({
         <button
           type="button"
           onClick={handleShare}
-          className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium transition hover:bg-[#faf6ef]"
+          className="inline-flex w-full items-center justify-center rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-center font-medium transition hover:bg-[#faf6ef] sm:w-auto"
         >
           Compartilhar
         </button>

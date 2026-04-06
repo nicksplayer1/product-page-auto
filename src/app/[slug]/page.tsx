@@ -62,28 +62,42 @@ export default async function PublicProductPage({ params }: Props) {
   ].filter(Boolean) as string[];
 
   return (
-    <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
-      <div className={`mx-auto max-w-7xl rounded-[28px] border bg-white/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur md:p-10 ${themeBox(product.theme)}`}>
-        <div className="mb-6 flex flex-wrap justify-between gap-3">
-          <div className="rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium">
-            Tema: {product.theme || "clean"}
-          </div>
-
-          <Link href="/" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 text-sm font-medium">
+    <main className="min-h-screen bg-[#fcfaf7] px-4 py-6 text-zinc-900 sm:px-6 sm:py-10">
+      <div className={`mx-auto max-w-7xl rounded-[28px] border bg-white/80 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.04)] backdrop-blur sm:p-6 md:p-10 ${themeBox(product.theme)}`}>
+        <div className="mb-5 flex justify-end sm:mb-6">
+          <Link
+            href="/"
+            className="rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef] sm:px-5"
+          >
             Início
           </Link>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[24px] border border-[#ece4d8] bg-white p-4">
-            <ProductMediaGallery title={product.title} images={images} videoUrl={product.video_url} />
+        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8">
+          <div className="rounded-[24px] border border-[#ece4d8] bg-white p-3 sm:p-4">
+            <ProductMediaGallery
+              title={product.title}
+              images={images}
+              videoUrl={product.video_url}
+            />
           </div>
 
-          <div className="rounded-[24px] border border-[#ece4d8] bg-white p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Página de produto</p>
-            <h1 className="mt-4 text-3xl font-bold leading-tight md:text-5xl">{product.title}</h1>
-            <p className="mt-5 text-4xl font-semibold">{formatPrice(product.price)}</p>
-            <p className="mt-6 whitespace-pre-line text-base leading-8 text-zinc-700">{product.description || "Sem descrição disponível."}</p>
+          <div className="rounded-[24px] border border-[#ece4d8] bg-white p-5 sm:p-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+              Página de produto
+            </p>
+
+            <h1 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
+              {product.title}
+            </h1>
+
+            <p className="mt-5 text-3xl font-semibold sm:text-4xl">
+              {formatPrice(product.price)}
+            </p>
+
+            <p className="mt-6 whitespace-pre-line text-sm leading-7 text-zinc-700 sm:text-base sm:leading-8">
+              {product.description || "Sem descrição disponível."}
+            </p>
 
             <PublicProductActions
               title={product.title}
