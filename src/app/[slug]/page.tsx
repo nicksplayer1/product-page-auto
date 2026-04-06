@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { formatPrice } from "@/lib/format-price";
-import ProductGallery from "@/components/product-gallery";
+import ProductMediaGallery from "@/components/product-media-gallery";
 import PublicProductActions from "@/components/public-product-actions";
 
 type Props = {
@@ -48,7 +48,10 @@ export default async function PublicProductPage({ params }: Props) {
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
 
-  const images = [product.image_url, ...((galleryRows || []).map((row) => row.image_url))].filter(Boolean) as string[];
+  const images = [
+    product.image_url,
+    ...((galleryRows || []).map((row) => row.image_url)),
+  ].filter(Boolean) as string[];
 
   return (
     <main className="min-h-screen bg-[#fcfaf7] px-6 py-10 text-zinc-900">
@@ -61,13 +64,11 @@ export default async function PublicProductPage({ params }: Props) {
 
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-4">
-            {product.video_url ? (
-              <div className="rounded-[20px] border border-[#ece4d8] bg-white p-3">
-                <video src={product.video_url} controls className="aspect-[4/3] w-full rounded-[16px] object-cover" />
-              </div>
-            ) : (
-              <ProductGallery images={images} title={product.title} />
-            )}
+            <ProductMediaGallery
+              title={product.title}
+              images={images}
+              videoUrl={product.video_url}
+            />
           </div>
 
           <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-6">

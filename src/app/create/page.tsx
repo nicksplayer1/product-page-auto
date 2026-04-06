@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ImageFieldsManager from "@/components/image-fields-manager";
+import ProductMediaGallery from "@/components/product-media-gallery";
 import VideoUploadField from "@/components/video-upload-field";
 
 export default function CreatePage() {
@@ -79,7 +80,7 @@ export default function CreatePage() {
           <div>
             <h1 className="text-3xl font-bold">Criar página de produto</h1>
             <p className="mt-2 text-zinc-600">
-              Agora você pode adicionar links externos e mais botões de ação.
+              Agora vídeo e imagens aparecem juntos na prévia.
             </p>
           </div>
 
@@ -96,17 +97,11 @@ export default function CreatePage() {
             <h2 className="mb-4 text-xl font-bold">Prévia rápida</h2>
 
             <div className="rounded-[24px] border border-[#ece4d8] bg-white p-4">
-              <div className="aspect-[4/3] overflow-hidden rounded-[20px] border border-[#ece4d8] bg-[#fcfaf7]">
-                {videoUrl ? (
-                  <video src={videoUrl} controls className="h-full w-full object-cover" />
-                ) : parsedImages[0] ? (
-                  <img src={parsedImages[0]} alt={title || "Produto"} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-sm text-zinc-500">
-                    Primeira mídia do produto
-                  </div>
-                )}
-              </div>
+              <ProductMediaGallery
+                title={title || "Produto"}
+                images={parsedImages}
+                videoUrl={videoUrl}
+              />
 
               <div className="mt-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
@@ -126,19 +121,14 @@ export default function CreatePage() {
                 </p>
 
                 <div className="mt-5 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4 text-sm text-zinc-600">
-                  <p><strong>WhatsApp:</strong> {whatsappNumber ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Site:</strong> {websiteUrl ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Shopee:</strong> {shopeeUrl ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Mercado Livre:</strong> {mercadolivreUrl ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Instagram:</strong> {instagramUrl ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Personalizado:</strong> {customButtonUrl ? "sim" : "não"}</p>
+                  <p><strong>Total de imagens:</strong> {parsedImages.length}</p>
+                  <p className="mt-2"><strong>Vídeo:</strong> {videoUrl ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Ações ativas:</strong> {[whatsappNumber, websiteUrl, shopeeUrl, mercadolivreUrl, instagramUrl, customButtonUrl].filter(Boolean).length}</p>
                 </div>
 
                 <div className="mt-5 flex flex-wrap gap-3">
                   {whatsappNumber && <button type="button" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">WhatsApp</button>}
                   {websiteUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Site</button>}
-                  {shopeeUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Shopee</button>}
-                  {mercadolivreUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Mercado Livre</button>}
                   {instagramUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Instagram</button>}
                   {customButtonUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">{customButtonLabel || "Abrir link"}</button>}
                 </div>

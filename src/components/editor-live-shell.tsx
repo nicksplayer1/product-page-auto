@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import ImageFieldsManager from "@/components/image-fields-manager";
-import ProductGallery from "@/components/product-gallery";
+import ProductMediaGallery from "@/components/product-media-gallery";
 import VideoUploadField from "@/components/video-upload-field";
 
 type Product = {
@@ -145,7 +145,7 @@ export default function EditorLiveShell({
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[#f0e7db] bg-[#fbf8f3] p-5">
           <div>
             <h1 className="text-3xl font-bold">Editor da página</h1>
-            <p className="mt-2 text-zinc-600">Agora você pode adicionar links externos e mais botões de ação.</p>
+            <p className="mt-2 text-zinc-600">Agora vídeo e imagens aparecem juntos.</p>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -161,13 +161,11 @@ export default function EditorLiveShell({
             <h2 className="mb-4 text-xl font-bold">Prévia em tempo real</h2>
 
             <div className="rounded-[24px] border border-[#ece4d8] bg-white p-4">
-              <div className="rounded-[20px] border border-[#ece4d8] bg-[#fcfaf7] p-2">
-                {videoUrl ? (
-                  <video src={videoUrl} controls className="aspect-[4/3] w-full rounded-[16px] object-cover" />
-                ) : (
-                  <ProductGallery images={parsedImages} title={title || "Produto"} />
-                )}
-              </div>
+              <ProductMediaGallery
+                title={title || "Produto"}
+                images={parsedImages}
+                videoUrl={videoUrl}
+              />
 
               <div className="mt-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Prévia da página</p>
@@ -177,19 +175,13 @@ export default function EditorLiveShell({
 
                 <div className="mt-5 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4 text-sm text-zinc-600">
                   <p><strong>Status:</strong> {status}</p>
-                  <p className="mt-2"><strong>WhatsApp:</strong> {whatsappNumber ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Site:</strong> {websiteUrl ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Shopee:</strong> {shopeeUrl ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Mercado Livre:</strong> {mercadolivreUrl ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Instagram:</strong> {instagramUrl ? "sim" : "não"}</p>
-                  <p className="mt-2"><strong>Personalizado:</strong> {customButtonUrl ? "sim" : "não"}</p>
+                  <p className="mt-2"><strong>Total de imagens:</strong> {parsedImages.length}</p>
+                  <p className="mt-2"><strong>Vídeo:</strong> {videoUrl ? "sim" : "não"}</p>
                 </div>
 
                 <div className="mt-5 flex flex-wrap gap-3">
                   {whatsappNumber && <button type="button" className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white">WhatsApp</button>}
                   {websiteUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Site</button>}
-                  {shopeeUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Shopee</button>}
-                  {mercadolivreUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Mercado Livre</button>}
                   {instagramUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">Instagram</button>}
                   {customButtonUrl && <button type="button" className="rounded-2xl border border-[#e4d8c7] bg-white px-5 py-3 font-medium">{customButtonLabel || "Abrir link"}</button>}
                 </div>
