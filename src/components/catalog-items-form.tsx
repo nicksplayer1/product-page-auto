@@ -28,46 +28,47 @@ export default function CatalogItemsForm({
   selectedItems,
 }: Props) {
   const router = useRouter();
+
+  const initialSelectedIds = useMemo(() => {
+    const sorted = [...selectedItems].sort((a, b) => a.sort_order - b.sort_order);
+    return sorted.map((item) => item.product_page_id);
+  }, [selectedItems]);
+
+  const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const initialSelectedIds = useMemo(() => {
-    const sortedSelected = [...selectedItems].sort(
-      (a, b) => a.sort_order - b.sort_order
-    );
+  const selectedCount = selectedIds.length;
 
-    const validIds = sortedSelected
-      .map((item) => item.product_page_id)
-      .filter((id) => products.some((product) => product.id === id));
+  const productMap = useMemo(() => {
+    const map = new Map<string, Product>();
+    products.forEach((product) => map.set(product.id, product));
+    return map;
+  }, [products]);
 
-    return validIds;
-  }, [products, selectedItems]);
-
-  const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);
-
-  const selectedProducts = useMemo(() => {
-    const map = new Map(products.map((product) => [product.id, product]));
-    return selectedIds
-      .map((id) => map.get(id))
-      .filter(Boolean) as Product[];
-  }, [products, selectedIds]);
+  const selectedProducts = useMemo(
+    () => selectedIds.map((id) => productMap.get(id)).filter(Boolean) as Product[],
+    [selectedIds, productMap]
+  );
 
   function isSelected(id: string) {
     return selectedIds.includes(id);
   }
 
   function toggleProduct(id: string, checked: boolean) {
-    setSelectedIds((current) => {
-      if (checked) {
-        if (current.includes(id)) return current;
-        return [...current, id];
-      }
+    setMessage("");
 
-      return current.filter((item) => item !== id);
-    });
+    if (checked) {
+      setSelectedIds((current) => (current.includes(id) ? current : [...current, id]));
+      return;
+    }
+
+    setSelectedIds((current) => current.filter((item) => item !== id));
   }
 
   function moveSelected(id: string, direction: -1 | 1) {
+    setMessage("");
+
     setSelectedIds((current) => {
       const index = current.indexOf(id);
       if (index === -1) return current;
@@ -107,7 +108,7 @@ export default function CatalogItemsForm({
         throw new Error(json.error || "Erro ao salvar catálogo.");
       }
 
-      setMessage("Ordem e produtos do catálogo salvos com sucesso.");
+      setMessage("Catálogo salvo com sucesso.");
       router.refresh();
     } catch (err: unknown) {
       setMessage(err instanceof Error ? err.message : "Erro ao salvar catálogo.");
@@ -117,19 +118,19 @@ export default function CatalogItemsForm({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="rounded-2xl border border-[#ece4d8] bg-white p-4 text-sm text-zinc-700">
-        Produtos selecionados: <strong>{selectedIds.length}</strong>
+        Produtos selecionados: {selectedCount}
       </div>
 
-      <div className="rounded-[24px] border border-[#ece4d8] bg-white p-5">
-        <h2 className="text-xl font-bold">Ordem do catálogo</h2>
+      <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-5">
+        <h2 className="text-2xl font-bold">Ordem do catálogo</h2>
         <p className="mt-2 text-sm text-zinc-600">
           Use os botões para subir ou descer os produtos já selecionados.
         </p>
 
         {selectedProducts.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4 text-sm text-zinc-600">
+          <div className="mt-4 rounded-2xl border border-[#ece4d8] bg-white p-4 text-sm text-zinc-500">
             Nenhum produto selecionado ainda.
           </div>
         ) : (
@@ -137,10 +138,10 @@ export default function CatalogItemsForm({
             {selectedProducts.map((product, index) => (
               <div
                 key={product.id}
-                className="rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4"
+                className="rounded-2xl border border-[#ece4d8] bg-white p-4"
               >
-                <div className="grid gap-4 md:grid-cols-[88px_1fr_auto] md:items-center">
-                  <div className="h-22 w-22 overflow-hidden rounded-xl border border-[#ece4d8] bg-white md:h-24 md:w-24">
+                <div className="grid gap-4 md:grid-cols-[72px_1fr_auto] md:items-center">
+                  <div className="h-[72px] w-[72px] overflow-hidden rounded-xl border border-[#ece4d8] bg-[#fbf8f3]">
                     {product.image_url ? (
                       <img
                         src={product.image_url}
@@ -155,24 +156,19 @@ export default function CatalogItemsForm({
                   </div>
 
                   <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-full border border-[#e4d8c7] bg-white px-3 py-1 text-xs font-medium text-zinc-700">
-                        Posição {index + 1}
-                      </span>
-                    </div>
-
-                    <h3 className="mt-3 text-lg font-semibold leading-tight">
-                      {product.title}
-                    </h3>
+                    <span className="inline-flex rounded-full border border-[#e4d8c7] bg-[#fbf8f3] px-3 py-1 text-xs font-medium text-zinc-700">
+                      Posição {index + 1}
+                    </span>
+                    <h3 className="mt-2 text-2xl font-bold leading-tight">{product.title}</h3>
                     <p className="mt-1 text-sm text-zinc-500">/{product.slug}</p>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 md:justify-end">
+                  <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
                       onClick={() => moveSelected(product.id, -1)}
                       disabled={index === 0}
-                      className="rounded-xl border border-[#e4d8c7] bg-white px-3 py-2 text-sm font-medium transition hover:bg-[#faf6ef] disabled:opacity-40"
+                      className="rounded-xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef] disabled:opacity-40"
                     >
                       ↑ Subir
                     </button>
@@ -181,7 +177,7 @@ export default function CatalogItemsForm({
                       type="button"
                       onClick={() => moveSelected(product.id, 1)}
                       disabled={index === selectedProducts.length - 1}
-                      className="rounded-xl border border-[#e4d8c7] bg-white px-3 py-2 text-sm font-medium transition hover:bg-[#faf6ef] disabled:opacity-40"
+                      className="rounded-xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef] disabled:opacity-40"
                     >
                       ↓ Descer
                     </button>
@@ -191,25 +187,42 @@ export default function CatalogItemsForm({
             ))}
           </div>
         )}
+
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={loading}
+            className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60"
+          >
+            {loading ? "Salvando..." : "Salvar catálogo"}
+          </button>
+
+          {message && (
+            <div className="rounded-2xl border border-[#ece4d8] bg-white px-4 py-3 text-sm text-zinc-700">
+              {message}
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="rounded-[24px] border border-[#ece4d8] bg-white p-5">
-        <h2 className="text-xl font-bold">Selecionar produtos</h2>
+      <div className="rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3] p-5">
+        <h2 className="text-2xl font-bold">Selecionar produtos</h2>
         <p className="mt-2 text-sm text-zinc-600">
           Marque os produtos que devem entrar neste catálogo.
         </p>
 
-        <div className="mt-4 space-y-4">
+        <div className="mt-4 space-y-3">
           {products.map((product) => {
-            const selected = isSelected(product.id);
+            const checked = isSelected(product.id);
 
             return (
               <div
                 key={product.id}
-                className="rounded-2xl border border-[#ece4d8] bg-[#fbf8f3] p-4"
+                className="rounded-2xl border border-[#ece4d8] bg-white p-4"
               >
-                <div className="grid gap-4 md:grid-cols-[96px_1fr_auto] md:items-center">
-                  <div className="h-24 w-24 overflow-hidden rounded-xl border border-[#ece4d8] bg-white">
+                <div className="grid gap-4 md:grid-cols-[72px_1fr_auto] md:items-center">
+                  <div className="h-[72px] w-[72px] overflow-hidden rounded-xl border border-[#ece4d8] bg-[#fbf8f3]">
                     {product.image_url ? (
                       <img
                         src={product.image_url}
@@ -224,22 +237,19 @@ export default function CatalogItemsForm({
                   </div>
 
                   <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {selected && (
-                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                          Selecionado
-                        </span>
-                      )}
-                    </div>
-
-                    <h3 className="mt-2 font-semibold">{product.title}</h3>
+                    {checked && (
+                      <span className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                        Selecionado
+                      </span>
+                    )}
+                    <h3 className="mt-2 text-2xl font-bold leading-tight">{product.title}</h3>
                     <p className="mt-1 text-sm text-zinc-500">/{product.slug}</p>
                   </div>
 
-                  <label className="flex items-center gap-2 text-sm font-medium text-zinc-700 md:justify-end">
+                  <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
                     <input
                       type="checkbox"
-                      checked={selected}
+                      checked={checked}
                       onChange={(e) => toggleProduct(product.id, e.target.checked)}
                     />
                     Incluir
@@ -249,22 +259,24 @@ export default function CatalogItemsForm({
             );
           })}
         </div>
-      </div>
 
-      {message && (
-        <div className="rounded-2xl border border-[#ece4d8] bg-white px-4 py-3 text-sm text-zinc-700">
-          {message}
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={loading}
+            className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60"
+          >
+            {loading ? "Salvando..." : "Salvar catálogo"}
+          </button>
+
+          {message && (
+            <div className="rounded-2xl border border-[#ece4d8] bg-white px-4 py-3 text-sm text-zinc-700">
+              {message}
+            </div>
+          )}
         </div>
-      )}
-
-      <button
-        type="button"
-        onClick={handleSave}
-        disabled={loading}
-        className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60"
-      >
-        {loading ? "Salvando..." : "Salvar catálogo"}
-      </button>
+      </div>
     </div>
   );
 }
