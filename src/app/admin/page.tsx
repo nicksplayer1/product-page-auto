@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import ProductAdminActions from "@/components/product-admin-actions";
+import { formatPrice } from "@/lib/format-price";
 
 export const dynamic = "force-dynamic";
 
@@ -20,12 +21,6 @@ type Product = {
 function formatDate(value: string | null) {
   if (!value) return "-";
   return new Date(value).toLocaleString("pt-BR");
-}
-
-function formatPrice(value: string | null) {
-  if (!value) return "Sem preço";
-  if (String(value).includes("R$")) return String(value);
-  return `R$ ${value}`;
 }
 
 function statusLabel(status: string | null) {
@@ -131,10 +126,6 @@ export default async function AdminPage() {
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <span className={`rounded-full border px-3 py-1 text-xs font-medium ${statusClasses(product.status)}`}>
                     {statusLabel(product.status)}
-                  </span>
-
-                  <span className="rounded-full border border-[#e4d8c7] bg-white px-3 py-1 text-xs font-medium text-zinc-700">
-                    Tema {product.theme || "clean"}
                   </span>
                 </div>
 

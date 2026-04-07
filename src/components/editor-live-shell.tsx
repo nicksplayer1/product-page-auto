@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import ImageFieldsManager from "@/components/image-fields-manager";
 import ProductMediaGallery from "@/components/product-media-gallery";
 import VideoUploadField from "@/components/video-upload-field";
+import { formatPrice } from "@/lib/format-price";
 
 const themes = [
   { value: "clean", label: "Clean" },
@@ -192,10 +193,17 @@ export default function EditorLiveShell({
               <ProductMediaGallery title={title || "Produto"} images={parsedImages} videoUrl={videoUrl} />
 
               <div className="mt-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Tema {theme}</p>
-                <h3 className="mt-3 text-2xl font-bold leading-tight">{title || "Nome do produto"}</h3>
-                <p className="mt-3 text-2xl font-semibold">{price ? `R$ ${price}` : "Preço do produto"}</p>
-                <p className="mt-4 whitespace-pre-line text-sm leading-7 text-zinc-600">{description || "A descrição do produto aparecerá aqui."}</p>
+                <h3 className="text-2xl font-bold leading-tight">
+                  {title || "Nome do produto"}
+                </h3>
+
+                <p className="mt-3 text-2xl font-semibold">
+                  {price ? formatPrice(price) : "Preço do produto"}
+                </p>
+
+                <p className="mt-4 whitespace-pre-line text-sm leading-7 text-zinc-600">
+                  {description || "A descrição do produto aparecerá aqui."}
+                </p>
               </div>
             </div>
 

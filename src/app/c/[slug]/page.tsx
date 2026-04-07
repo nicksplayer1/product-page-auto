@@ -95,7 +95,9 @@ export default async function PublicCatalogPage({ params }: Props) {
           <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {products.map((product) => {
               const whatsapp = onlyDigits(product.whatsapp_number);
-              const whatsappUrl = `https://wa.me/${whatsapp}?text=${encodeURIComponent(`Olá! Tenho interesse em ${product.title}.`)}`;
+              const whatsappUrl = whatsapp
+                ? `https://wa.me/${whatsapp}?text=${encodeURIComponent(`Olá! Tenho interesse em ${product.title}.`)}`
+                : null;
 
               return (
                 <div key={product.id} className="overflow-hidden rounded-[24px] border border-[#ece4d8] bg-[#fbf8f3]">
@@ -116,9 +118,11 @@ export default async function PublicCatalogPage({ params }: Props) {
                         Ver produto
                       </Link>
 
-                      <a href={whatsappUrl} target="_blank" rel="noreferrer" className="rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
-                        WhatsApp
-                      </a>
+                      {whatsappUrl && (
+                        <a href={whatsappUrl} target="_blank" rel="noreferrer" className="rounded-2xl border border-[#e4d8c7] bg-white px-4 py-3 text-sm font-medium transition hover:bg-[#faf6ef]">
+                          WhatsApp
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
